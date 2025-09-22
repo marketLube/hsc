@@ -247,9 +247,9 @@ export default function ProductPage({ params }: ProductPageProps) {
       {/* Floating Navigation */}
       <FloatingNav cartCount={totalCartItems} />
 
-      <Container>
+      <Container className="pt-24 sm:pt-28 md:pt-32">
         {/* Breadcrumb */}
-        <div className="py-6 pt-24">
+        <div className="py-6">
           <nav className="flex items-center space-x-2 text-sm text-gray-600">
             <Link href="/" className="hover:text-brand transition-colors">
               Home

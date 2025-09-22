@@ -51,7 +51,7 @@ export function BannerCarousel() {
   return (
     <section
       id="home"
-      className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen overflow-hidden"
+      className="relative h-screen overflow-hidden"
       role="region"
       aria-roledescription="carousel"
       aria-label="Hero banner carousel"
@@ -82,9 +82,9 @@ export function BannerCarousel() {
           </div>
 
           {/* Content */}
-          <Container className="relative h-full flex items-center px-4 sm:px-6">
+          <Container className="relative h-full flex items-center justify-center px-4 sm:px-6">
             <motion.div
-              className="max-w-2xl text-white"
+              className="max-w-2xl text-white text-center"
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
@@ -108,22 +108,22 @@ export function BannerCarousel() {
               </motion.p>
 
               <motion.div
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.9, duration: 0.8 }}
               >
                 <Button
-                  size="lg"
-                  className="bg-white text-brand hover:bg-white/90"
+                  size="default"
+                  className="bg-white text-brand hover:bg-white/90 sm:h-16 sm:px-10 sm:py-5 sm:text-lg"
                   onClick={() => document.querySelector(HERO_SLIDES[currentSlide].cta1.href)?.scrollIntoView({ behavior: "smooth" })}
                 >
                   {HERO_SLIDES[currentSlide].cta1.text}
                 </Button>
                 <Button
-                  size="lg"
+                  size="default"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-brand"
+                  className="border-white text-white hover:bg-white hover:text-brand sm:h-16 sm:px-10 sm:py-5 sm:text-lg"
                   onClick={() => document.querySelector(HERO_SLIDES[currentSlide].cta2.href)?.scrollIntoView({ behavior: "smooth" })}
                 >
                   {HERO_SLIDES[currentSlide].cta2.text}
@@ -134,24 +134,24 @@ export function BannerCarousel() {
         </motion.div>
       </AnimatePresence>
 
-      {/* Navigation Controls */}
-      <div className="absolute inset-y-0 left-2 sm:left-4 flex items-center">
+      {/* Navigation Controls - Hidden on mobile, visible on desktop */}
+      <div className="hidden md:flex absolute inset-y-0 left-4 items-center">
         <button
           onClick={prevSlide}
-          className="p-2 sm:p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+          className="p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
           aria-label="Previous slide"
         >
-          <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" />
+          <ChevronLeft className="h-6 w-6" />
         </button>
       </div>
 
-      <div className="absolute inset-y-0 right-2 sm:right-4 flex items-center">
+      <div className="hidden md:flex absolute inset-y-0 right-4 items-center">
         <button
           onClick={nextSlide}
-          className="p-2 sm:p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+          className="p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
           aria-label="Next slide"
         >
-          <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6" />
+          <ChevronRight className="h-6 w-6" />
         </button>
       </div>
 

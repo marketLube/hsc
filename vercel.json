@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "thethealthysugarcompany.com"
+        }
+      ],
+      "destination": "https://www.thethealthysugarcompany.com/$1",
+      "permanent": true
+    }
+  ]
+}

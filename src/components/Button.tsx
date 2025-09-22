@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "default" | "md" | "lg";
   children: React.ReactNode;
 }
 
@@ -21,11 +21,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             "border-2 border-gray-300 text-gray-700 hover:border-brand hover:text-brand": variant === "outline",
             "text-brand hover:bg-brand/10": variant === "ghost",
           },
-          // Sizes
+          // Sizes - Made buttons thicker and more substantial
           {
-            "h-9 px-4 text-sm": size === "sm",
-            "h-11 px-6 text-base": size === "md", 
-            "h-13 px-8 text-lg": size === "lg",
+            "h-10 px-4 py-2 text-sm": size === "sm",
+            "h-12 px-6 py-3 text-base": size === "default",
+            "h-14 px-8 py-4 text-base": size === "md", 
+            "h-16 px-10 py-5 text-lg": size === "lg",
           },
           className
         )}
