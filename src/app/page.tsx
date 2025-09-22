@@ -47,13 +47,15 @@ export default function Home() {
       updateCartCount();
     };
 
-    window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
-    window.addEventListener("storage", handleStorageChange);
-    
-    return () => {
-      window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
+      window.addEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }
   }, []);
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -114,7 +114,7 @@ export default function ArticlePage({ params }: ArticlePageProps) {
   // Convert markdown-like content to JSX
   const renderContent = (content: string) => {
     const lines = content.trim().split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: React.ReactElement[] = [];
     let currentParagraph: string[] = [];
     let key = 0;
 

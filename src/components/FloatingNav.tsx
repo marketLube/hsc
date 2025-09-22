@@ -24,7 +24,9 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      if (typeof window !== 'undefined') {
+        setIsScrolled(window.scrollY > 50);
+      }
     };
 
     // Check if notice bar is dismissed
@@ -46,17 +48,19 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
       checkNoticeVisibility();
     };
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("storage", handleNoticeChange);
-    window.addEventListener("notice-dismissed", handleNoticeChange);
-    window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("storage", handleNoticeChange);
-      window.removeEventListener("notice-dismissed", handleNoticeChange);
-      window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
-    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener("scroll", handleScroll);
+      window.addEventListener("storage", handleNoticeChange);
+      window.addEventListener("notice-dismissed", handleNoticeChange);
+      window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
+      
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("storage", handleNoticeChange);
+        window.removeEventListener("notice-dismissed", handleNoticeChange);
+        window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+      };
+    }
   }, []);
 
   // Set up intersection observer for section detection
@@ -142,20 +146,22 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
     setIsMobileMenuOpen(false);
     
     // If we're on a different page (like /benefits), navigate first
-    if (window.location.pathname !== "/" && !sectionId.includes("benefits") && !sectionId.includes("science")) {
-      window.location.href = `/#${sectionId}`;
-      return;
-    }
-    
-    const element = document.getElementById(sectionId);
-    if (element) {
-      const navHeight = 100; // Account for floating nav height
-      const elementPosition = element.offsetTop - navHeight;
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname !== "/" && !sectionId.includes("benefits") && !sectionId.includes("science")) {
+        window.location.href = `/#${sectionId}`;
+        return;
+      }
       
-      window.scrollTo({
-        top: elementPosition,
-        behavior: "smooth"
-      });
+      const element = document.getElementById(sectionId);
+      if (element) {
+        const navHeight = 100; // Account for floating nav height
+        const elementPosition = element.offsetTop - navHeight;
+        
+        window.scrollTo({
+          top: elementPosition,
+          behavior: "smooth"
+        });
+      }
     }
   };
 
@@ -200,9 +206,9 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
             <div className="hidden lg:flex items-center space-x-8">
               {navItems.map((item) => {
                 const isActive = activeSection === item.sectionId || 
-                  (window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
-                  (window.location.pathname === "/science" && item.sectionId === "science") ||
-                  (window.location.pathname === "/contact" && item.sectionId === "contact");
+                  (typeof window !== 'undefined' && window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
+                  (typeof window !== 'undefined' && window.location.pathname === "/science" && item.sectionId === "science") ||
+                  (typeof window !== 'undefined' && window.location.pathname === "/contact" && item.sectionId === "contact");
                 
                 return (
                   <motion.div key={item.name} className="relative">
@@ -324,9 +330,9 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                 <div className="py-4">
                   {navItems.map((item, index) => {
                     const isActive = activeSection === item.sectionId || 
-                      (window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
-                      (window.location.pathname === "/science" && item.sectionId === "science") ||
-                      (window.location.pathname === "/contact" && item.sectionId === "contact");
+                      (typeof window !== 'undefined' && window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
+                      (typeof window !== 'undefined' && window.location.pathname === "/science" && item.sectionId === "science") ||
+                      (typeof window !== 'undefined' && window.location.pathname === "/contact" && item.sectionId === "contact");
                     
                     return (
                       <motion.div

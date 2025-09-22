@@ -29,8 +29,10 @@ export function ProductGrid() {
     showToast(`${product?.name} added to cart!`, "success");
     
     // Dispatch custom event for other components to listen
-    const totalItems = Object.values(updatedCart).reduce((sum, count) => sum + count, 0);
-    window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { totalItems } }));
+    const totalItems = Object.values(updatedCart).reduce((sum, count) => (sum as number) + (count as number), 0);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { totalItems } }));
+    }
   };
 
   return (

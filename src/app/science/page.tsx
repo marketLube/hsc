@@ -119,8 +119,10 @@ export default function SciencePage() {
       }
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    if (typeof window !== 'undefined') {
+      window.addEventListener("storage", handleStorageChange);
+      return () => window.removeEventListener("storage", handleStorageChange);
+    }
   }, []);
 
   return (
@@ -309,10 +311,10 @@ export default function SciencePage() {
               <motion.div variants={fadeInUp}>
                 <Card className="p-8">
                   <h3 className="text-2xl font-bold text-ink mb-6 text-center">
-                    {infographics[0].title}
+                    {infographics[0]?.title}
                   </h3>
                   <div className="space-y-4">
-                    {infographics[0].items.map((item, index) => (
+                    {infographics[0]?.items?.map((item, index) => (
                       <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="font-medium text-gray-700 flex-1 min-w-0">{item.label}</div>
                         <div className="flex items-center space-x-4 flex-shrink-0">
@@ -340,10 +342,10 @@ export default function SciencePage() {
               <motion.div variants={fadeInUp} className="flex flex-col h-full">
                 <Card className="p-8 flex-1">
                   <h3 className="text-2xl font-bold text-ink mb-6 text-center">
-                    {infographics[1].title}
+                    {infographics[1]?.title}
                   </h3>
                   <div className="space-y-6">
-                    {infographics[1].steps.map((step, index) => (
+                     {infographics[1]?.steps?.map((step, index) => (
                       <div key={index} className="flex items-start space-x-4">
                         <div className="w-10 h-10 bg-brand text-white rounded-full flex items-center justify-center font-bold flex-shrink-0">
                           {step.step}
@@ -404,7 +406,7 @@ export default function SciencePage() {
                   variants={fadeInUp}
                   custom={index}
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} onAddToCart={() => {}} />
                 </motion.div>
               ))}
             </div>
