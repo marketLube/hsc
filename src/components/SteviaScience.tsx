@@ -26,24 +26,24 @@ export function SteviaScience() {
   ];
 
   return (
-    <section className="py-12 bg-white" id="science">
+    <section className="py-8 sm:py-10 md:py-12 bg-white" id="science">
       <Container>
         <motion.div
-          className="text-center mb-8"
+          className="text-center mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-ink mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-3 sm:mb-4">
             The Science of Stevia
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
             Understanding what makes stevia a superior natural sweetener for modern lifestyles.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center mb-6 sm:mb-8">
           {/* Left Section - Video */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -51,13 +51,13 @@ export function SteviaScience() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className="text-xl font-bold text-ink mb-6">
+            <h3 className="text-lg sm:text-xl font-bold text-ink mb-4 sm:mb-6">
               What makes stevia sweet?
             </h3>
             
             {/* Video Placeholder */}
             <div className="relative">
-              <div className="relative h-64 w-full rounded-2xl overflow-hidden bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
+              <div className="relative h-48 sm:h-56 md:h-64 w-full rounded-2xl overflow-hidden bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
                 {/* Video Placeholder */}
                 <div className="text-center text-white">
                   <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">

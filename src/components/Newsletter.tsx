@@ -45,7 +45,7 @@ export function Newsletter() {
 
   if (isSubmitted) {
     return (
-      <section className="py-12 bg-brand">
+      <section className="py-8 sm:py-10 md:py-12 bg-brand">
         <Container>
           <motion.div
             className="text-center"
@@ -73,7 +73,7 @@ export function Newsletter() {
   }
 
   return (
-    <section className="py-12 bg-brand" id="newsletter">
+    <section className="py-8 sm:py-10 md:py-12 bg-brand" id="newsletter">
       <Container>
         <motion.div
           className="text-center"
@@ -82,16 +82,16 @@ export function Newsletter() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <Card className="max-w-2xl mx-auto p-6 md:p-8">
+          <Card className="max-w-2xl mx-auto p-4 sm:p-6 md:p-8">
             <CardContent className="p-0">
-              <div className="text-center mb-6">
-                <div className="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="h-6 w-6 text-brand" />
+              <div className="text-center mb-4 sm:mb-6">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                  <Mail className="h-5 w-5 sm:h-6 sm:w-6 text-brand" />
                 </div>
-                <h2 className="text-2xl font-bold text-ink mb-3">
+                <h2 className="text-xl sm:text-2xl font-bold text-ink mb-2 sm:mb-3">
                   Stay Sweet & Healthy
                 </h2>
-                <p className="text-base text-gray-600 leading-relaxed">
+                <p className="text-sm sm:text-base text-gray-600 leading-relaxed px-2">
                   Get exclusive recipes, health tips, and special offers delivered to your inbox. 
                   Join thousands who've made the switch to healthier sweetness.
                 </p>

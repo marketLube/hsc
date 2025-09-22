@@ -36,16 +36,16 @@ export function Testimonials() {
   const currentTestimonial = TESTIMONIALS[currentIndex];
 
   return (
-    <section className="py-12 bg-gray-50" id="testimonials">
+    <section className="py-8 sm:py-10 md:py-12 bg-gray-50" id="testimonials">
       <Container>
         <motion.div
-          className="text-center mb-8"
+          className="text-center mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-2xl md:text-3xl font-bold text-ink mb-3">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-ink mb-2 sm:mb-3">
             What Our Customers Say
           </h2>
           <p className="text-base text-gray-600 max-w-2xl mx-auto">

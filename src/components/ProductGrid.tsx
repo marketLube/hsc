@@ -36,24 +36,24 @@ export function ProductGrid() {
   };
 
   return (
-    <section className="py-16 bg-white" id="products">
+    <section className="py-8 sm:py-12 md:py-16 bg-white" id="products">
       <Container>
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 md:mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-ink mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-3 sm:mb-4">
             Our Product Range
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
             Choose from four convenient formats to fit your lifestyle. All made with premium stevia leaf extract.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {PRODUCTS.map((product, index) => (
             <motion.div
               key={product.id}
@@ -72,14 +72,14 @@ export function ProductGrid() {
 
         {/* Product Comparison */}
         <motion.div
-          className="mt-16"
+          className="mt-8 sm:mt-12 md:mt-16"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          <div className="bg-gray-50 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-ink mb-6 text-center">
+          <div className="bg-gray-50 rounded-2xl p-4 sm:p-6 md:p-8">
+            <h3 className="text-xl sm:text-2xl font-bold text-ink mb-4 sm:mb-6 text-center">
               Which Format is Right for You?
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

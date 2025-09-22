@@ -8,29 +8,29 @@ import { BANNER_TILES } from "@/lib/data";
 
 export function BannerGrid() {
   return (
-    <section className="py-16 bg-gray-50" id="benefits">
+    <section className="py-8 sm:py-12 md:py-16 bg-gray-50" id="benefits">
       <Container>
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 md:mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-ink mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-3 sm:mb-4">
             Why Choose Healthy Sugar?
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
             Discover the benefits of plant-based sweetness that doesn't compromise on taste or health.
           </p>
           <Link href="/benefits">
-            <Button size="lg" className="mb-8">
+            <Button size="lg" className="mb-6 sm:mb-8">
               Learn More About Benefits
             </Button>
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {BANNER_TILES.map((tile, index) => (
             <motion.div
               key={tile.id}
@@ -40,22 +40,22 @@ export function BannerGrid() {
               transition={{ delay: index * 0.1, duration: 0.6 }}
             >
               <Card hover className="h-full overflow-hidden group cursor-pointer">
-                <div className="relative h-48 overflow-hidden">
+                <div className="relative h-40 sm:h-48 overflow-hidden">
                   <Image
                     src={tile.image}
                     alt={tile.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                   
                   {/* Content Overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-brand transition-colors">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
+                    <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 group-hover:text-brand transition-colors">
                       {tile.title}
                     </h3>
-                    <p className="text-white/90 text-sm leading-relaxed">
+                    <p className="text-white/90 text-xs sm:text-sm leading-relaxed">
                       {tile.subtitle}
                     </p>
                   </div>

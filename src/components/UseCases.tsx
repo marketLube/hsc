@@ -24,26 +24,26 @@ export function UseCases() {
   };
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-8 sm:py-12 md:py-16 bg-gray-50">
       <Container>
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 sm:mb-10 md:mb-12"
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-ink mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-ink mb-3 sm:mb-4">
             Perfect for Every Occasion
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
             Discover how Healthy Sugar fits seamlessly into your daily routine.
           </p>
         </motion.div>
 
         {/* Use Case Tabs */}
         <motion.div
-          className="flex justify-center mb-8"
+          className="flex justify-center mb-6 sm:mb-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}

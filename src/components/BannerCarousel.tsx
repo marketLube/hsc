@@ -51,7 +51,7 @@ export function BannerCarousel() {
   return (
     <section
       id="home"
-      className="relative h-screen overflow-hidden"
+      className="relative h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen overflow-hidden"
       role="region"
       aria-roledescription="carousel"
       aria-label="Hero banner carousel"
@@ -82,7 +82,7 @@ export function BannerCarousel() {
           </div>
 
           {/* Content */}
-          <Container className="relative h-full flex items-center">
+          <Container className="relative h-full flex items-center px-4 sm:px-6">
             <motion.div
               className="max-w-2xl text-white"
               initial={{ y: 50, opacity: 0 }}
@@ -90,7 +90,7 @@ export function BannerCarousel() {
               transition={{ delay: 0.3, duration: 0.8 }}
             >
               <motion.h1
-                className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight tracking-tight mb-3 sm:mb-4 md:mb-6"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.5, duration: 0.8 }}
@@ -99,7 +99,7 @@ export function BannerCarousel() {
               </motion.h1>
               
               <motion.p
-                className="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6 md:mb-8 text-white/90 leading-relaxed"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.7, duration: 0.8 }}
@@ -108,7 +108,7 @@ export function BannerCarousel() {
               </motion.p>
 
               <motion.div
-                className="flex flex-col sm:flex-row gap-4"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.9, duration: 0.8 }}
@@ -135,35 +135,35 @@ export function BannerCarousel() {
       </AnimatePresence>
 
       {/* Navigation Controls */}
-      <div className="absolute inset-y-0 left-4 flex items-center">
+      <div className="absolute inset-y-0 left-2 sm:left-4 flex items-center">
         <button
           onClick={prevSlide}
-          className="p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+          className="p-2 sm:p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
           aria-label="Previous slide"
         >
-          <ChevronLeft className="h-6 w-6" />
+          <ChevronLeft className="h-4 w-4 sm:h-6 sm:w-6" />
         </button>
       </div>
 
-      <div className="absolute inset-y-0 right-4 flex items-center">
+      <div className="absolute inset-y-0 right-2 sm:right-4 flex items-center">
         <button
           onClick={nextSlide}
-          className="p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
+          className="p-2 sm:p-3 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-colors"
           aria-label="Next slide"
         >
-          <ChevronRight className="h-6 w-6" />
+          <ChevronRight className="h-4 w-4 sm:h-6 sm:w-6" />
         </button>
       </div>
 
       {/* Dots Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-        <div className="flex space-x-3">
+      <div className="absolute bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="flex space-x-2 sm:space-x-3">
           {HERO_SLIDES.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               className={cn(
-                "w-3 h-3 rounded-full transition-all duration-300",
+                "w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300",
                 index === currentSlide
                   ? "bg-white scale-125"
                   : "bg-white/50 hover:bg-white/75"
@@ -175,10 +175,10 @@ export function BannerCarousel() {
       </div>
 
       {/* Play/Pause Indicator */}
-      <div className="absolute bottom-8 right-8">
+      <div className="absolute bottom-4 sm:bottom-8 right-4 sm:right-8">
         <button
           onClick={() => setIsPlaying(!isPlaying)}
-          className="text-white/70 hover:text-white text-sm transition-colors"
+          className="text-white/70 hover:text-white text-xs sm:text-sm transition-colors"
           aria-label={isPlaying ? "Pause slideshow" : "Play slideshow"}
         >
           {isPlaying ? "Pause" : "Play"}
