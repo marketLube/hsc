@@ -1,0 +1,383 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import Link from "next/link";
+import { Container } from "./Container";
+import { Button } from "./Button";
+import { Cart } from "./Cart";
+import { cn } from "@/lib/utils";
+
+interface FloatingNavProps {
+  cartCount?: number;
+}
+
+export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isNoticeVisible, setIsNoticeVisible] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [currentCartCount, setCurrentCartCount] = useState(cartCount);
+  const [activeSection, setActiveSection] = useState("home");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    // Check if notice bar is dismissed
+    const checkNoticeVisibility = () => {
+      const dismissed = localStorage.getItem("notice-dismissed");
+      setIsNoticeVisible(!dismissed);
+    };
+
+    // Handle cart updates from other components
+    const handleCartUpdate = (event: CustomEvent) => {
+      setCurrentCartCount(event.detail.totalItems);
+    };
+
+    // Initial check
+    checkNoticeVisibility();
+
+    // Listen for notice dismissal events
+    const handleNoticeChange = () => {
+      checkNoticeVisibility();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("storage", handleNoticeChange);
+    window.addEventListener("notice-dismissed", handleNoticeChange);
+    window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("storage", handleNoticeChange);
+      window.removeEventListener("notice-dismissed", handleNoticeChange);
+      window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+    };
+  }, []);
+
+  // Set up intersection observer for section detection
+  useEffect(() => {
+    const sections = [
+      "home",
+      "benefits", 
+      "products",
+      "science",
+      "testimonials",
+      "contact"
+    ];
+
+    const observerOptions = {
+      root: null,
+      rootMargin: "-20% 0px -60% 0px", // Trigger when section is 20% from top
+      threshold: 0.1
+    };
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const sectionId = entry.target.id;
+          if (sections.includes(sectionId)) {
+            setActiveSection(sectionId);
+          }
+        }
+      });
+    }, observerOptions);
+
+    // Observe all sections
+    sections.forEach((sectionId) => {
+      const element = document.getElementById(sectionId);
+      if (element && observerRef.current) {
+        observerRef.current.observe(element);
+      }
+    });
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (isMobileMenuOpen && !target.closest('.mobile-nav-container')) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMobileMenuOpen]);
+
+  // Update cart count when prop changes
+  useEffect(() => {
+    setCurrentCartCount(cartCount);
+  }, [cartCount]);
+
+  const navItems = [
+    { name: "Home", href: "/#home", sectionId: "home" },
+    { name: "Shop", href: "/#products", sectionId: "products" },
+    { name: "Benefits", href: "/benefits", sectionId: "benefits" },
+    { name: "Science", href: "/#science", sectionId: "science" },
+    { name: "Reviews", href: "/#testimonials", sectionId: "testimonials" },
+    { name: "Contact", href: "/contact", sectionId: "contact" },
+  ];
+
+  // Smooth scroll to section
+  const scrollToSection = (sectionId: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    
+    // Close mobile menu if open
+    setIsMobileMenuOpen(false);
+    
+    // If we're on a different page (like /benefits), navigate first
+    if (window.location.pathname !== "/" && !sectionId.includes("benefits") && !sectionId.includes("science")) {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+    
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const navHeight = 100; // Account for floating nav height
+      const elementPosition = element.offsetTop - navHeight;
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  return (
+    <motion.header
+      className={cn(
+        "fixed left-0 right-0 z-50 transition-all duration-300",
+        // Adjust top position based on notice bar visibility and scroll state
+        isNoticeVisible 
+          ? (isScrolled ? "top-12" : "top-16") // Notice bar visible: more spacing
+          : (isScrolled ? "top-2" : "top-4")   // Notice bar hidden: normal spacing
+      )}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Container>
+        <motion.nav
+          className={cn(
+            "bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200/50 shadow-premium transition-all duration-300 mobile-nav-container",
+            isScrolled ? "py-2 px-4" : "py-3 px-6"
+          )}
+          layout
+        >
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">H</span>
+                </div>
+                <span className="font-bold text-lg text-brand hidden sm:block">
+                  The Healthy Sugar Company
+                </span>
+                <span className="font-bold text-lg text-brand sm:hidden">
+                  HSC
+                </span>
+              </Link>
+            </div>
+
+            {/* Navigation Links */}
+            <div className="hidden lg:flex items-center space-x-8">
+              {navItems.map((item) => {
+                const isActive = activeSection === item.sectionId || 
+                  (window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
+                  (window.location.pathname === "/science" && item.sectionId === "science") ||
+                  (window.location.pathname === "/contact" && item.sectionId === "contact");
+                
+                return (
+                  <motion.div key={item.name} className="relative">
+                    <Link
+                      href={item.href}
+                      onClick={(e) => scrollToSection(item.sectionId, e)}
+                      className={cn(
+                        "relative font-medium text-sm transition-all duration-300 hover:text-brand",
+                        isActive 
+                          ? "text-brand" 
+                          : "text-gray-700"
+                      )}
+                    >
+                      {item.name}
+                      
+                      {/* Active indicator */}
+                      {isActive && (
+                        <motion.div
+                          className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand rounded-full"
+                          layoutId="activeIndicator"
+                          initial={{ opacity: 0, scaleX: 0 }}
+                          animate={{ opacity: 1, scaleX: 1 }}
+                          transition={{ 
+                            type: "spring", 
+                            stiffness: 500, 
+                            damping: 30,
+                            duration: 0.3
+                          }}
+                        />
+                      )}
+                      
+                      {/* Hover indicator */}
+                      <motion.div
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-brand/30 rounded-full"
+                        initial={{ scaleX: 0 }}
+                        whileHover={{ scaleX: isActive ? 0 : 1 }}
+                        transition={{ duration: 0.2 }}
+                      />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Right Actions */}
+            <div className="flex items-center space-x-3">
+              {/* Search */}
+              <button
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                aria-label="Search"
+              >
+                <Search className="h-5 w-5 text-gray-600" />
+              </button>
+
+              {/* Account */}
+              <button
+                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                aria-label="Account"
+              >
+                <User className="h-5 w-5 text-gray-600" />
+              </button>
+
+              {/* Cart */}
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                aria-label={`Cart (${currentCartCount} items)`}
+              >
+                <ShoppingCart className="h-5 w-5 text-gray-600" />
+                {currentCartCount > 0 && (
+                  <motion.span
+                    className="absolute -top-1 -right-1 bg-brand text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                  >
+                    {currentCartCount > 99 ? "99+" : currentCartCount}
+                  </motion.span>
+                )}
+              </button>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                aria-label="Toggle mobile menu"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5 text-gray-600" />
+                ) : (
+                  <Menu className="h-5 w-5 text-gray-600" />
+                )}
+              </button>
+
+              {/* Shop Button */}
+              <Button size="sm" className="hidden sm:inline-flex">
+                Shop
+              </Button>
+            </div>
+          </div>
+        </motion.nav>
+      </Container>
+
+      {/* Mobile Navigation Menu */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden mobile-nav-container"
+          >
+            <Container>
+              <motion.div
+                className="bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200/50 shadow-premium mt-2 overflow-hidden"
+                layout
+              >
+                <div className="py-4">
+                  {navItems.map((item, index) => {
+                    const isActive = activeSection === item.sectionId || 
+                      (window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
+                      (window.location.pathname === "/science" && item.sectionId === "science") ||
+                      (window.location.pathname === "/contact" && item.sectionId === "contact");
+                    
+                    return (
+                      <motion.div
+                        key={item.name}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                      >
+                        <Link
+                          href={item.href}
+                          onClick={(e) => scrollToSection(item.sectionId, e)}
+                          className={cn(
+                            "flex items-center justify-between px-6 py-3 font-medium transition-all duration-300 hover:bg-gray-50",
+                            isActive 
+                              ? "text-brand bg-brand/5 border-r-2 border-brand" 
+                              : "text-gray-700"
+                          )}
+                        >
+                          <span>{item.name}</span>
+                          {isActive && (
+                            <motion.div
+                              className="w-2 h-2 bg-brand rounded-full"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            />
+                          )}
+                        </Link>
+                      </motion.div>
+                    );
+                  })}
+                  
+                  {/* Mobile Shop Button */}
+                  <div className="px-6 pt-4 border-t border-gray-100 mt-2">
+                    <Button size="sm" className="w-full">
+                      Shop Now
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </Container>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Cart Component */}
+      <Cart 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)}
+        onCartUpdate={setCurrentCartCount}
+      />
+    </motion.header>
+  );
+}
