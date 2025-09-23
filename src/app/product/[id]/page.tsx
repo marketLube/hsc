@@ -5,12 +5,14 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Star, Plus, Minus, ArrowLeft, Heart, Share2, ShoppingCart, Check, Truck, Shield, Heart as HeartPulse, Eye } from "lucide-react";
+import { Star, Plus, Minus, ArrowLeft, Heart, Share2, ShoppingCart, Check, Truck, Shield, Heart as HeartPulse, Eye, Zap } from "lucide-react";
 import { Container } from "@/components/Container";
 import { Button } from "@/components/Button";
 import { Card, CardContent } from "@/components/Card";
 import { useToast } from "@/components/Toast";
 import { FloatingNav } from "@/components/FloatingNav";
+import { Cart } from "@/components/Cart";
+import { Footer } from "@/components/Footer";
 import { PRODUCTS } from "@/lib/products";
 import { formatINR } from "@/lib/currency";
 import { cn } from "@/lib/utils";
@@ -28,6 +30,10 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [progress, setProgress] = useState(0);
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [showCart, setShowCart] = useState(false);
+  const [lastCopiedCoupon, setLastCopiedCoupon] = useState<string | null>(null);
+  const [copyTimeout, setCopyTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const { showToast, ToastContainer } = useToast();
 
   // Unwrap the params Promise using React.use()
@@ -35,12 +41,53 @@ export default function ProductPage({ params }: ProductPageProps) {
   const product = PRODUCTS.find(p => p.id === resolvedParams.id);
 
   useEffect(() => {
-    // Load cart from localStorage
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
+    const updateCartCount = () => {
+      const savedCart = localStorage.getItem("cart");
+      if (savedCart) {
+        try {
+          const cartItems = JSON.parse(savedCart);
+          setCartItems(cartItems);
+        } catch (error) {
+          console.error("Error parsing cart:", error);
+          setCartItems({});
+        }
+      } else {
+        setCartItems({});
+      }
+    };
+
+    // Initial load
+    updateCartCount();
+
+    // Listen for cart updates from custom events
+    const handleCartUpdate = () => {
+      updateCartCount();
+    };
+
+    // Listen for storage changes (from other tabs)
+    const handleStorageChange = () => {
+      updateCartCount();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener("cartUpdated", handleCartUpdate);
+      window.addEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("cartUpdated", handleCartUpdate);
+        window.removeEventListener("storage", handleStorageChange);
+      };
     }
   }, []);
+
+  // Cleanup timeout on component unmount
+  useEffect(() => {
+    return () => {
+      if (copyTimeout) {
+        clearTimeout(copyTimeout);
+      }
+    };
+  }, [copyTimeout]);
 
   // Auto-scrolling tabs functionality
   useEffect(() => {
@@ -83,31 +130,108 @@ export default function ProductPage({ params }: ProductPageProps) {
   const handleAddToCart = () => {
     const updatedCart = {
       ...cartItems,
-      [product.id]: (cartItems[product.id] || 0) + quantity
+      [currentVariant.id]: (cartItems[currentVariant.id] || 0) + quantity
     };
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
     
-    // Dispatch storage event to sync with other components
-    window.dispatchEvent(new Event('storage'));
+    // Dispatch custom event for other components to listen
+    const totalItems = Object.values(updatedCart).reduce((sum, count) => (sum as number) + (count as number), 0);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { totalItems } }));
+    }
     
-    showToast(`${quantity} x ${product.name} added to cart!`, "success");
+    showToast(`${quantity} x ${product.name} (${currentVariant.pack}) added to cart!`, "success");
+  };
+
+  const handleBuyNow = () => {
+    // Add to cart first
+    const updatedCart = {
+      ...cartItems,
+      [currentVariant.id]: (cartItems[currentVariant.id] || 0) + quantity
+    };
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    
+    // Dispatch custom event for other components to listen
+    const totalItems = Object.values(updatedCart).reduce((sum, count) => (sum as number) + (count as number), 0);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { totalItems } }));
+    }
+    
+    // Redirect to checkout
+    if (typeof window !== 'undefined') {
+      window.location.href = '/checkout';
+    }
   };
 
   const handleCopyCoupon = (code: string) => {
+    // Prevent multiple clicks on the same coupon within 2 seconds
+    if (lastCopiedCoupon === code) {
+      showToast(`Coupon "${code}" already copied!`, "info");
+      return;
+    }
+
+    // Clear any existing timeout
+    if (copyTimeout) {
+      clearTimeout(copyTimeout);
+    }
+
     navigator.clipboard.writeText(code).then(() => {
+      setLastCopiedCoupon(code);
       showToast(`Coupon code "${code}" copied to clipboard!`, "success");
+      
+      // Reset the copied coupon after 2 seconds
+      const timeout = setTimeout(() => {
+        setLastCopiedCoupon(null);
+      }, 2000);
+      setCopyTimeout(timeout);
     }).catch(() => {
       showToast("Failed to copy coupon code", "error");
     });
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: product.name,
+      text: `Check out ${product.name} - ${product.blurb}`,
+      url: window.location.href,
+    };
+
+    try {
+      if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+        showToast("Product shared successfully!", "success");
+      } else {
+        // Fallback to copying URL to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        showToast("Product link copied to clipboard!", "success");
+      }
+    } catch (error) {
+      // If sharing fails, try copying to clipboard as fallback
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast("Product link copied to clipboard!", "success");
+      } catch (clipboardError) {
+        showToast("Unable to share product", "error");
+      }
+    }
+  };
+
   const incrementQuantity = () => setQuantity(prev => prev + 1);
   const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
 
-  const totalPrice = product.price * quantity;
-  const isInCart = cartItems[product.id] > 0;
-  const totalCartItems = Object.values(cartItems).reduce((sum, count) => sum + count, 0);
+  // Get current variant or default product
+  const getCurrentVariant = () => {
+    if (!selectedVariant) return { id: product.id, pack: product.pack, price: product.price };
+    return product.variants?.find(v => v.id === selectedVariant) || { id: product.id, pack: product.pack, price: product.price };
+  };
+
+  const currentVariant = getCurrentVariant();
+  const totalPrice = currentVariant.price * quantity;
+  const isInCart = cartItems && cartItems[currentVariant.id] && cartItems[currentVariant.id] > 0;
+  const totalCartItems = Object.values(cartItems || {}).reduce((sum, count) => sum + count, 0);
+  
 
   // Product details based on ID
   const getProductDetails = () => {
@@ -243,7 +367,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const details = getProductDetails();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pb-20 sm:pb-0">
       {/* Floating Navigation */}
       <FloatingNav cartCount={totalCartItems} />
 
@@ -274,7 +398,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         </div>
 
         {/* Product Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16 items-stretch">
           {/* Product Image */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -283,10 +407,10 @@ export default function ProductPage({ params }: ProductPageProps) {
             className="space-y-6"
           >
             <Card className="overflow-hidden">
-              <div className="relative h-96 lg:h-[500px]">
+              <div className="relative h-80 lg:h-96">
                 <Image
-                  src={product.image.src}
-                  alt={product.image.alt}
+                  src={product.images && product.images.length > 0 ? product.images[selectedImageIndex].src : product.image.src}
+                  alt={product.images && product.images.length > 0 ? product.images[selectedImageIndex].alt : product.image.alt}
                   fill
                   className="object-cover"
                   sizes="(max-width: 1024px) 100vw, 50vw"
@@ -301,7 +425,38 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             </Card>
 
-            {/* Trust Badges below image */}
+            {/* Thumbnail Gallery */}
+            {product.images && product.images.length > 0 && (
+              <div className="flex justify-center">
+                <div className="grid grid-cols-5 gap-2 max-w-sm">
+                  {product.images.map((img, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={cn(
+                        "relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200",
+                        selectedImageIndex === index
+                          ? "border-brand ring-2 ring-brand/20"
+                          : "border-gray-200 hover:border-gray-300"
+                      )}
+                    >
+                      <Image
+                        src={img.src}
+                        alt={img.alt}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                      {selectedImageIndex === index && (
+                        <div className="absolute inset-0 bg-brand/10" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Trust Badges below thumbnails */}
             <div className="grid grid-cols-3 gap-4">
               <div className="text-center">
                 <Truck className="h-6 w-6 text-brand mx-auto mb-2" />
@@ -326,10 +481,10 @@ export default function ProductPage({ params }: ProductPageProps) {
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex flex-col h-full"
+            className="flex flex-col justify-between h-full"
           >
             {/* Top Section - Product Info */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               <div>
                 <h1 className="text-3xl lg:text-4xl font-bold text-ink mb-2">
                   {product.name}
@@ -357,66 +512,158 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </div>
               </div>
 
-              {/* Price */}
-              <div className="border-t border-b border-gray-200 py-6">
-                <div className="flex items-center space-x-4">
-                  <span className="text-3xl font-bold text-brand">
-                    {formatINR(product.price)}
+              {/* Price - Compact */}
+              <div className="border-t border-b border-gray-200 py-4">
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl font-bold text-brand">
+                    {formatINR(currentVariant.price)}
                   </span>
-                  <span className="text-lg text-gray-500 line-through">
-                    {formatINR(Math.floor(product.price * 1.4))}
+                  <span className="text-base text-gray-500 line-through">
+                    {formatINR(Math.floor(currentVariant.price * 1.4))}
                   </span>
-                  <span className="px-2 py-1 text-sm font-semibold bg-red-100 text-red-800 rounded">
-                    Save {Math.floor(((product.price * 1.4) - product.price) / (product.price * 1.4) * 100)}%
+                  <span className="px-2 py-1 text-xs font-semibold bg-red-100 text-red-800 rounded">
+                    Save {Math.floor(((currentVariant.price * 1.4) - currentVariant.price) / (currentVariant.price * 1.4) * 100)}%
                   </span>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
+                <p className="text-xs text-gray-600 mt-1">
                   Inclusive of all taxes • Free shipping on first order
                 </p>
               </div>
 
-              {/* Available Coupons */}
-              <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
-                <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
-                  <span className="text-green-600 mr-2">🎟️</span>
-                  Available Coupons
-                </h3>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between bg-white rounded-lg p-2.5 border border-dashed border-green-300">
-                    <div>
-                      <span className="font-mono text-sm font-bold text-green-700">FIRST10</span>
-                      <p className="text-xs text-gray-600">Get 10% off on your first order</p>
-                    </div>
-                    <button 
-                      onClick={() => handleCopyCoupon('FIRST10')}
-                      className="text-xs bg-green-600 text-white px-2.5 py-1 rounded-full hover:bg-green-700 transition-colors"
-                    >
-                      COPY
-                    </button>
-                  </div>
-                  <div className="flex items-center justify-between bg-white rounded-lg p-2.5 border border-dashed border-blue-300">
-                    <div>
-                      <span className="font-mono text-sm font-bold text-blue-700">HEALTHY20</span>
-                      <p className="text-xs text-gray-600">Save ₹20 on orders above ₹500</p>
-                    </div>
-                    <button 
-                      onClick={() => handleCopyCoupon('HEALTHY20')}
-                      className="text-xs bg-blue-600 text-white px-2.5 py-1 rounded-full hover:bg-blue-700 transition-colors"
-                    >
-                      COPY
-                    </button>
+              {/* Available Coupons - Horizontal Display with Tooltips */}
+              {product.coupons && product.coupons.length > 0 && (
+                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-3 border border-green-200">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-2 flex items-center">
+                    <span className="text-green-600 mr-2">🎟️</span>
+                    Available Coupons
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.coupons.slice(0, 3).map((coupon, index) => (
+                      <div 
+                        key={index}
+                        className={cn(
+                          "group relative flex-1 min-w-0 bg-white rounded-lg p-2 border border-dashed transition-all hover:shadow-md hover:scale-[1.02]",
+                          coupon.color === "green" && "border-green-300 hover:border-green-400",
+                          coupon.color === "blue" && "border-blue-300 hover:border-blue-400",
+                          coupon.color === "purple" && "border-purple-300 hover:border-purple-400",
+                          coupon.color === "orange" && "border-orange-300 hover:border-orange-400"
+                        )}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="min-w-0 flex-1 mr-2">
+                            <span className={cn(
+                              "font-mono text-xs font-bold block truncate",
+                              coupon.color === "green" && "text-green-700",
+                              coupon.color === "blue" && "text-blue-700",
+                              coupon.color === "purple" && "text-purple-700",
+                              coupon.color === "orange" && "text-orange-700"
+                            )}>
+                              {coupon.code}
+                            </span>
+                            <p className="text-xs text-gray-600 truncate">{coupon.description}</p>
+                          </div>
+                          <button 
+                            onClick={() => handleCopyCoupon(coupon.code)}
+                            className={cn(
+                              "text-xs text-white px-2 py-1 rounded-full hover:opacity-90 transition-colors flex-shrink-0",
+                              coupon.color === "green" && "bg-green-600 hover:bg-green-700",
+                              coupon.color === "blue" && "bg-blue-600 hover:bg-blue-700",
+                              coupon.color === "purple" && "bg-purple-600 hover:bg-purple-700",
+                              coupon.color === "orange" && "bg-orange-600 hover:bg-orange-700"
+                            )}
+                          >
+                            COPY
+                          </button>
+                        </div>
+                        
+                        {/* Tooltip */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-10 shadow-lg">
+                          <div className="font-mono font-bold">{coupon.code}</div>
+                          <div className="mt-1">{coupon.description}</div>
+                          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
+              )}
+
+              {/* Product Variants - Compact Grid */}
+              {product.variants && product.variants.length > 0 && (
+                <div className="space-y-2">
+                  <h3 className="text-sm font-semibold text-gray-800">Choose Size:</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    {/* Default variant */}
+                    <div 
+                      onClick={() => setSelectedVariant(null)}
+                      className={cn(
+                        "border-2 rounded-lg p-3 cursor-pointer transition-all hover:shadow-sm text-center",
+                        !selectedVariant 
+                          ? "border-brand bg-brand/5 ring-1 ring-brand/20" 
+                          : "border-gray-200 hover:border-gray-300"
+                      )}
+                    >
+                      <div className="space-y-1">
+                        <div className="font-medium text-sm">{product.pack}</div>
+                        <div className="text-sm font-bold text-brand">{formatINR(product.price)}</div>
+                        {product.badge && (
+                          <div className="px-1.5 py-0.5 text-xs font-semibold bg-brand text-white rounded-full">
+                            {product.badge}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Variant options */}
+                    {product.variants.map((variant) => (
+                      <div 
+                        key={variant.id}
+                        onClick={() => setSelectedVariant(variant.id)}
+                        className={cn(
+                          "border-2 rounded-lg p-3 cursor-pointer transition-all hover:shadow-sm text-center",
+                          selectedVariant === variant.id 
+                            ? "border-brand bg-brand/5 ring-1 ring-brand/20" 
+                            : "border-gray-200 hover:border-gray-300"
+                        )}
+                      >
+                        <div className="space-y-1">
+                          <div className="font-medium text-sm">{variant.pack}</div>
+                          <div className="space-y-0.5">
+                            <div className="text-sm font-bold text-brand">{formatINR(variant.price)}</div>
+                            {variant.originalPrice && (
+                              <div className="flex items-center justify-center space-x-1">
+                                <span className="text-xs text-gray-500 line-through">
+                                  {formatINR(variant.originalPrice)}
+                                </span>
+                                {variant.discount && (
+                                  <span className="px-1 py-0.5 text-xs font-semibold bg-red-100 text-red-800 rounded">
+                                    -{variant.discount}%
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          {variant.badge && (
+                            <div className={cn(
+                              "px-1.5 py-0.5 text-xs font-semibold rounded-full",
+                              variant.badge === "Most Popular" && "bg-blue-100 text-blue-800",
+                              variant.badge === "Best Value" && "bg-green-100 text-green-800"
+                            )}>
+                              {variant.badge}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Spacer to push bottom content down */}
-            <div className="flex-grow"></div>
-
-            {/* Bottom Section - Actions aligned with image */}
-            <div className="space-y-6 mt-6">
+            {/* Bottom Section - Actions aligned with image bottom */}
+            <div className="space-y-3 mt-4">
               {/* Quantity & Add to Cart */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center space-x-4">
                   <span className="font-medium">Quantity:</span>
                   <div className="flex items-center border border-gray-300 rounded-lg">
@@ -436,31 +683,36 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </div>
                 </div>
 
-                <div className="flex space-x-3">
+                <div className="space-y-3">
                   {isInCart ? (
-                    <Button 
-                      onClick={() => setShowCart(true)} 
-                      className="flex-1" 
-                      size="lg"
-                    >
-                      <Eye className="h-5 w-5 mr-2" />
-                      View Cart ({cartItems[product.id]} items)
-                    </Button>
+                    <div className="flex gap-3">
+                      <Button 
+                        onClick={() => setShowCart(true)} 
+                        className="flex-1" 
+                        size="default"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        View Cart ({cartItems[currentVariant.id] || 0})
+                      </Button>
+                      <Button variant="outline" size="default" className="px-4" onClick={handleShare}>
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   ) : (
-                    <Button onClick={handleAddToCart} className="flex-1" size="lg">
-                      <ShoppingCart className="h-5 w-5 mr-2" />
-                      Add to Cart • {formatINR(totalPrice)}
-                    </Button>
+                    <div className="flex gap-3">
+                      <Button onClick={handleAddToCart} className="flex-1" size="default">
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        <span className="hidden sm:inline">Add to Cart • {currentVariant.pack} • </span>
+                        <span className="sm:hidden">Add to Cart • </span>
+                        {formatINR(totalPrice)}
+                      </Button>
+                      <Button variant="outline" size="default" className="px-4" onClick={handleShare}>
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   )}
-                  <Button variant="outline" size="lg">
-                    <Heart className="h-5 w-5" />
-                  </Button>
-                  <Button variant="outline" size="lg">
-                    <Share2 className="h-5 w-5" />
-                  </Button>
                 </div>
               </div>
-
             </div>
           </motion.div>
         </div>
@@ -493,10 +745,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                         )}
                       >
                         {tab.label}
-                        {/* Auto-scroll indicator */}
-                        {isAutoScrolling && activeTab === tab.id && (
-                          <div className="absolute top-1 right-0 w-2 h-2 bg-brand rounded-full animate-pulse"></div>
-                        )}
                       </button>
                       
                       {/* Progress bar */}
@@ -514,21 +762,6 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </div>
                   ))}
                 </nav>
-                
-                {/* Auto-scroll controls */}
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={() => setIsAutoScrolling(!isAutoScrolling)}
-                    className={cn(
-                      "text-xs px-3 py-1 rounded-full border transition-colors",
-                      isAutoScrolling 
-                        ? "bg-brand text-white border-brand" 
-                        : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
-                    )}
-                  >
-                    {isAutoScrolling ? "⏸️ Pause" : "▶️ Auto"}
-                  </button>
-                </div>
               </div>
             </div>
 
@@ -720,144 +953,36 @@ export default function ProductPage({ params }: ProductPageProps) {
         </motion.div>
       </Container>
 
-      {/* Cart Sidebar */}
-      {showCart && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
-          {/* Backdrop */}
-          <div 
-            className="absolute inset-0 bg-black bg-opacity-30 transition-opacity"
-            onClick={() => setShowCart(false)}
-          ></div>
-          
-          {/* Cart Panel */}
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl border-l border-gray-200"
-          >
-            <div className="flex h-full flex-col">
-              {/* Cart Header */}
-              <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-                <h2 className="text-lg font-semibold text-gray-900">Shopping Cart</h2>
-                <button
-                  onClick={() => setShowCart(false)}
-                  className="rounded-full p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-                >
-                  <Plus className="h-5 w-5 rotate-45" />
-                </button>
-              </div>
+      {/* Footer */}
+      <Footer />
 
-              {/* Cart Items */}
-              <div className="flex-1 overflow-y-auto px-6 py-4">
-                {totalCartItems === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                    <ShoppingCart className="h-12 w-12 mb-4" />
-                    <p className="text-lg font-medium">Your cart is empty</p>
-                    <p className="text-sm">Add some products to get started</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {Object.entries(cartItems).map(([productId, count]) => {
-                      const cartProduct = PRODUCTS.find(p => p.id === productId);
-                      if (!cartProduct || count === 0) return null;
-                      
-                      return (
-                        <div key={productId} className="flex items-center space-x-4 bg-gray-50 rounded-lg p-4">
-                          <div className="relative h-16 w-16 flex-shrink-0">
-                            <Image
-                              src={cartProduct.image.src}
-                              alt={cartProduct.image.alt}
-                              fill
-                              className="object-cover rounded-lg"
-                              sizes="64px"
-                            />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="text-sm font-medium text-gray-900 truncate">
-                              {cartProduct.name}
-                            </h3>
-                            <p className="text-sm text-gray-500">{cartProduct.pack}</p>
-                            <p className="text-sm font-medium text-brand">
-                              {formatINR(cartProduct.price)} × {count}
-                            </p>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => {
-                                const updatedCart = { ...cartItems };
-                                if (updatedCart[productId] > 1) {
-                                  updatedCart[productId]--;
-                                } else {
-                                  delete updatedCart[productId];
-                                }
-                                setCartItems(updatedCart);
-                                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                                
-                                // Dispatch storage event to sync with other components
-                                window.dispatchEvent(new Event('storage'));
-                              }}
-                              className="p-1 rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              <Minus className="h-4 w-4" />
-                            </button>
-                            <span className="text-sm font-medium w-8 text-center">{count}</span>
-                            <button
-                              onClick={() => {
-                                const updatedCart = { ...cartItems, [productId]: count + 1 };
-                                setCartItems(updatedCart);
-                                localStorage.setItem("cart", JSON.stringify(updatedCart));
-                                
-                                // Dispatch storage event to sync with other components
-                                window.dispatchEvent(new Event('storage'));
-                              }}
-                              className="p-1 rounded-full hover:bg-gray-200 transition-colors"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-
-              {/* Cart Footer */}
-              {totalCartItems > 0 && (
-                <div className="border-t border-gray-200 px-6 py-4 space-y-4">
-                  <div className="flex justify-between text-lg font-semibold">
-                    <span>Total:</span>
-                    <span className="text-brand">
-                      {formatINR(
-                        Object.entries(cartItems).reduce((total, [productId, count]) => {
-                          const cartProduct = PRODUCTS.find(p => p.id === productId);
-                          return total + (cartProduct ? cartProduct.price * count : 0);
-                        }, 0)
-                      )}
-                    </span>
-                  </div>
-                  <Button className="w-full" size="lg">
-                    <ShoppingCart className="h-5 w-5 mr-2" />
-                    Proceed to Checkout
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    className="w-full" 
-                    size="lg"
-                    onClick={() => setShowCart(false)}
-                  >
-                    Continue Shopping
-                  </Button>
-                </div>
-              )}
-            </div>
-          </motion.div>
-        </div>
-      )}
+      {/* Shared Cart Component */}
+      <Cart 
+        isOpen={showCart} 
+        onClose={() => setShowCart(false)}
+        onCartUpdate={(totalItems) => {
+          // This will be handled by the cartUpdated event listener
+        }}
+      />
 
       <ToastContainer />
+
+      {/* Floating Buy Now Button - Mobile Only */}
+      <motion.div 
+        className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/50 p-4 sm:hidden shadow-lg"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.5 }}
+      >
+        <Button 
+          onClick={handleBuyNow} 
+          className="w-full bg-brand hover:bg-brand/90 text-white" 
+          size="lg"
+        >
+          <Zap className="h-5 w-5 mr-2" />
+          Buy Now • {currentVariant.pack} • {formatINR(totalPrice)}
+        </Button>
+      </motion.div>
     </div>
   );
 }

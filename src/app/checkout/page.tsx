@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
@@ -26,6 +26,9 @@ import { useToast } from "@/components/Toast";
 import { PRODUCTS } from "@/lib/products";
 import { formatINR } from "@/lib/currency";
 import { cn } from "@/lib/utils";
+import { useGooglePlaces } from "@/hooks/useGooglePlaces";
+import { SearchableDropdown } from "@/components/SearchableDropdown";
+import { INDIAN_STATES } from "@/lib/states";
 
 interface AddressData {
   fullName: string;
@@ -80,6 +83,10 @@ export default function CheckoutPage() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [errors, setErrors] = useState<Partial<AddressData>>({});
 
+  // Google Places integration
+  const { isLoaded: isGoogleLoaded, error: googleError, initializeAutocomplete, cleanup } = useGooglePlaces();
+  const addressInputRef = useRef<HTMLInputElement>(null);
+
   // Load cart items on page load
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
@@ -129,6 +136,40 @@ export default function CheckoutPage() {
     }
     return () => clearInterval(interval);
   }, [otpSent, otpTimer]);
+
+  // Initialize Google Places Autocomplete
+  useEffect(() => {
+    if (isGoogleLoaded && addressInputRef.current && currentStep === 'address') {
+      const autocomplete = initializeAutocomplete(
+        addressInputRef.current,
+        (parsedAddress) => {
+          setAddressData(prev => ({
+            ...prev,
+            addressLine1: parsedAddress.addressLine1,
+            addressLine2: parsedAddress.addressLine2,
+            city: parsedAddress.city,
+            state: parsedAddress.state,
+            pincode: parsedAddress.pincode,
+          }));
+          
+          // Clear any previous errors for auto-filled fields
+          setErrors(prev => ({
+            ...prev,
+            addressLine1: '',
+            city: '',
+            state: '',
+            pincode: '',
+          }));
+
+          showToast('Address auto-filled successfully!', 'success');
+        }
+      );
+
+      return () => {
+        cleanup();
+      };
+    }
+  }, [isGoogleLoaded, currentStep, initializeAutocomplete, cleanup, showToast]);
 
   // Redirect if cart is empty
   if (!isLoading && cartItemsArray.length === 0) {
@@ -205,7 +246,14 @@ export default function CheckoutPage() {
   const handleApplyCoupon = (codeToApply?: string) => {
     const code = codeToApply || couponCode;
     const coupon = COUPON_CODES.find(c => c.code.toLowerCase() === code.toLowerCase());
+    
     if (coupon) {
+      // Check if this coupon is already applied
+      if (appliedCoupon?.code === coupon.code) {
+        showToast(`Coupon "${coupon.code}" is already applied!`, "info");
+        return;
+      }
+      
       setAppliedCoupon(coupon);
       setCouponCode('');
       showToast(`Coupon "${coupon.code}" applied successfully! ${coupon.description}`, "success");
@@ -235,8 +283,8 @@ export default function CheckoutPage() {
     localStorage.removeItem('cart');
     window.dispatchEvent(new CustomEvent("cartUpdated", { detail: { totalItems: 0 } }));
     
-    // Redirect to success page or home
-    router.push('/?payment=success');
+    // Redirect to success page
+    router.push('/success');
   };
 
   const handleBackToCart = () => {
@@ -388,10 +436,12 @@ export default function CheckoutPage() {
               </div>
               <input
                 type="tel"
+                name="phone"
+                autoComplete="tel"
                 value={addressData.phone}
                 onChange={(e) => setAddressData(prev => ({ ...prev, phone: e.target.value }))}
                 className={cn(
-                  "w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
+                  "w-full pl-12 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm",
                   errors.phone ? "border-red-300" : "border-gray-300"
                 )}
                 placeholder="Enter 10-digit mobile number"
@@ -507,10 +557,12 @@ export default function CheckoutPage() {
             </label>
             <input
               type="text"
+              name="name"
+              autoComplete="name"
               value={addressData.fullName}
               onChange={(e) => setAddressData(prev => ({ ...prev, fullName: e.target.value }))}
               className={cn(
-                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
+                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm",
                 errors.fullName ? "border-red-300" : "border-gray-300"
               )}
               placeholder="Enter your full name"
@@ -524,10 +576,12 @@ export default function CheckoutPage() {
             </label>
             <input
               type="email"
+              name="email"
+              autoComplete="email"
               value={addressData.email}
               onChange={(e) => setAddressData(prev => ({ ...prev, email: e.target.value }))}
               className={cn(
-                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
+                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm",
                 errors.email ? "border-red-300" : "border-gray-300"
               )}
               placeholder="Enter your email address"
@@ -540,16 +594,24 @@ export default function CheckoutPage() {
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Address Line 1 *
           </label>
-          <input
-            type="text"
-            value={addressData.addressLine1}
-            onChange={(e) => setAddressData(prev => ({ ...prev, addressLine1: e.target.value }))}
-            className={cn(
-              "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
-              errors.addressLine1 ? "border-red-300" : "border-gray-300"
-            )}
-            placeholder="House/Flat No., Building Name, Street"
-          />
+          <div className="relative">
+            <input
+              ref={addressInputRef}
+              type="text"
+              name="address-line1"
+              autoComplete="address-line1"
+              value={addressData.addressLine1}
+              onChange={(e) => setAddressData(prev => ({ ...prev, addressLine1: e.target.value }))}
+              className={cn(
+                "w-full px-3 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm",
+                errors.addressLine1 ? "border-red-300" : "border-gray-300"
+              )}
+              placeholder="House/Flat No., Building Name, Street"
+            />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <MapPin className="h-4 w-4 text-gray-400" />
+            </div>
+          </div>
           {errors.addressLine1 && <p className="text-red-500 text-xs mt-1">{errors.addressLine1}</p>}
         </div>
 
@@ -559,9 +621,11 @@ export default function CheckoutPage() {
           </label>
           <input
             type="text"
+            name="address-line2"
+            autoComplete="address-line2"
             value={addressData.addressLine2}
             onChange={(e) => setAddressData(prev => ({ ...prev, addressLine2: e.target.value }))}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm"
             placeholder="Landmark, Area"
           />
         </div>
@@ -571,10 +635,12 @@ export default function CheckoutPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
             <input
               type="text"
+              name="city"
+              autoComplete="address-level2"
               value={addressData.city}
               onChange={(e) => setAddressData(prev => ({ ...prev, city: e.target.value }))}
               className={cn(
-                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
+                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm",
                 errors.city ? "border-red-300" : "border-gray-300"
               )}
               placeholder="City"
@@ -584,15 +650,18 @@ export default function CheckoutPage() {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
-            <input
-              type="text"
+            <SearchableDropdown
+              options={INDIAN_STATES}
               value={addressData.state}
-              onChange={(e) => setAddressData(prev => ({ ...prev, state: e.target.value }))}
+              onChange={(value) => setAddressData(prev => ({ ...prev, state: value }))}
+              placeholder="Select state"
+              searchPlaceholder="Search states..."
+              name="state"
+              autoComplete="address-level1"
               className={cn(
-                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
                 errors.state ? "border-red-300" : "border-gray-300"
               )}
-              placeholder="State"
+              error={errors.state}
             />
             {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
           </div>
@@ -601,10 +670,12 @@ export default function CheckoutPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
             <input
               type="text"
+              name="postal-code"
+              autoComplete="postal-code"
               value={addressData.pincode}
               onChange={(e) => setAddressData(prev => ({ ...prev, pincode: e.target.value }))}
               className={cn(
-                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors",
+                "w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-brand focus:border-transparent transition-colors text-sm",
                 errors.pincode ? "border-red-300" : "border-gray-300"
               )}
               placeholder="Pincode"
@@ -620,10 +691,10 @@ export default function CheckoutPage() {
         <Button 
           variant="outline" 
           onClick={() => setCurrentStep('phone')}
-          className="w-24 h-12"
+          className="w-24 h-12 flex items-center justify-center"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back
+          <ArrowLeft className="h-4 w-4 mr-1.5" />
+          <span>Back</span>
         </Button>
         <Button onClick={handleContinueToAddress} className="flex-1 h-12">
           <CreditCard className="h-4 w-4 mr-2" />

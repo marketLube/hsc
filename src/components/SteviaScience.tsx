@@ -5,8 +5,14 @@ import Link from "next/link";
 import { Container } from "./Container";
 import { Card, CardContent } from "./Card";
 import { Button } from "./Button";
+import { useCounterAnimation } from "../hooks/useCounterAnimation";
 
 export function SteviaScience() {
+  // Animated counters for research statistics
+  const fdaYear = useCounterAnimation({ end: 2008, duration: 2500 });
+  const studiesCount = useCounterAnimation({ end: 200, duration: 2000, suffix: '+' });
+  const countriesCount = useCounterAnimation({ end: 60, duration: 1800, suffix: '+' });
+
   const benefits = [
     {
       icon: Leaf,
@@ -46,17 +52,19 @@ export function SteviaScience() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-center mb-6 sm:mb-8">
           {/* Left Section - Video */}
           <motion.div
+            className="w-full flex justify-center"
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className="text-lg sm:text-xl font-bold text-ink mb-4 sm:mb-6">
-              What makes stevia sweet?
-            </h3>
-            
             {/* Video Placeholder */}
-            <div className="relative">
+            <div className="relative w-full">
+              {/* Header on top of video */}
+              <h3 className="text-lg sm:text-xl font-bold text-white absolute top-4 left-4 z-10 bg-black/20 backdrop-blur-sm px-3 py-2 rounded-lg">
+                What makes stevia sweet?
+              </h3>
+              
               <div className="relative h-48 sm:h-56 md:h-64 w-full rounded-2xl overflow-hidden bg-gradient-to-br from-brand to-brand/80 flex items-center justify-center">
                 {/* Video Placeholder */}
                 <div className="text-center text-white">
@@ -170,15 +178,15 @@ export function SteviaScience() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div>
-                <div className="text-3xl font-bold mb-2">2008</div>
+                <div ref={fdaYear.elementRef} className="text-3xl font-bold mb-2">{fdaYear.displayValue}</div>
                 <p className="text-white/90 text-sm">FDA approved stevia as safe</p>
               </div>
               <div>
-                <div className="text-3xl font-bold mb-2">200+</div>
+                <div ref={studiesCount.elementRef} className="text-3xl font-bold mb-2">{studiesCount.displayValue}</div>
                 <p className="text-white/90 text-sm">Scientific studies conducted</p>
               </div>
               <div>
-                <div className="text-3xl font-bold mb-2">60+</div>
+                <div ref={countriesCount.elementRef} className="text-3xl font-bold mb-2">{countriesCount.displayValue}</div>
                 <p className="text-white/90 text-sm">Countries approve stevia use</p>
               </div>
             </div>

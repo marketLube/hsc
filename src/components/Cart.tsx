@@ -322,46 +322,53 @@ export function Cart({ isOpen, onClose, onCartUpdate }: CartProps) {
                 <div className="flex items-center justify-center space-x-2 py-2">
                   <span className="text-xs text-gray-500">We accept:</span>
                   <div className="flex items-center space-x-1.5">
-                    {/* GPay */}
+                    {/* Google Pay */}
                     <div className="w-8 h-5 bg-white border border-gray-200 rounded flex items-center justify-center shadow-sm">
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                        <rect width="20" height="12" rx="2" fill="white"/>
-                        <path d="M8 3h1.5l1 3h1l-1-3c.5 0 1-.5 1-1s-.5-1-1-1H8v2zm0 4h4v1H8V7z" fill="#4285F4"/>
-                        <circle cx="4" cy="6" r="2" fill="#34A853"/>
-                        <circle cx="16" cy="6" r="2" fill="#EA4335"/>
+                      <svg width="16" height="10" viewBox="0 0 40 24" fill="none">
+                        <path d="M19.26 9.71c0 2.18-1.7 3.78-3.78 3.78s-3.78-1.6-3.78-3.78c0-2.17 1.7-3.78 3.78-3.78s3.78 1.61 3.78 3.78z" fill="#4285F4"/>
+                        <path d="M15.48 7.18c-.86 0-1.56.7-1.56 1.56 0 .86.7 1.56 1.56 1.56.86 0 1.56-.7 1.56-1.56 0-.86-.7-1.56-1.56-1.56z" fill="white"/>
+                        <path d="M8.33 9.71c0 2.18-1.7 3.78-3.78 3.78S.77 11.89.77 9.71c0-2.17 1.7-3.78 3.78-3.78s3.78 1.61 3.78 3.78z" fill="#34A853"/>
+                        <path d="M4.55 7.18c-.86 0-1.56.7-1.56 1.56 0 .86.7 1.56 1.56 1.56.86 0 1.56-.7 1.56-1.56 0-.86-.7-1.56-1.56-1.56z" fill="white"/>
+                        <path d="M30.19 9.71c0 2.18-1.7 3.78-3.78 3.78s-3.78-1.6-3.78-3.78c0-2.17 1.7-3.78 3.78-3.78s3.78 1.61 3.78 3.78z" fill="#EA4335"/>
+                        <path d="M26.41 7.18c-.86 0-1.56.7-1.56 1.56 0 .86.7 1.56 1.56 1.56.86 0 1.56-.7 1.56-1.56 0-.86-.7-1.56-1.56-1.56z" fill="white"/>
+                        <path d="M35.5 6.5h-2v1.5h2v1.5h-2v1.5h2v1.5h-3.5V5h3.5v1.5z" fill="#4285F4"/>
                       </svg>
                     </div>
                     {/* PhonePe */}
-                    <div className="w-8 h-5 bg-white border border-gray-200 rounded flex items-center justify-center shadow-sm">
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                        <rect width="20" height="12" rx="2" fill="#5F259F"/>
-                        <path d="M4 3h2c1 0 1.5.5 1.5 1.5S7 6 6 6H4V3zm0 4h1.5l1.5 2H9L7.5 7H6c1.5 0 2.5-1 2.5-2.5S7.5 2 6 2H3v7h1V7z" fill="white"/>
-                        <path d="M11 3v1h2v1h-1v1h1v1h-2v1h3V3h-3zm4 0v4h1V4h1v3h1V3h-3z" fill="white"/>
+                    <div className="w-8 h-5 bg-gradient-to-r from-purple-600 to-purple-700 rounded flex items-center justify-center shadow-sm">
+                      <svg width="16" height="10" viewBox="0 0 24 16" fill="none">
+                        <path d="M4 4h3c1.5 0 2.5 1 2.5 2.5S8.5 9 7 9H4V4zm0 6h2.5L9 14h2L8.5 10H7c2 0 3.5-1.5 3.5-3.5S9 3 7 3H2v11h2v-4z" fill="white"/>
+                        <path d="M13 4v1.5h3v1.5h-1.5v1.5h1.5v1.5H13v1.5h4.5V4H13zm6 0v6h1.5V6h1.5v4h1.5V4H19z" fill="white"/>
                       </svg>
                     </div>
                     {/* Visa */}
                     <div className="w-8 h-5 bg-white border border-gray-200 rounded flex items-center justify-center shadow-sm">
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                        <rect width="20" height="12" rx="2" fill="white"/>
-                        <path d="M3 3l1.5 6h1L7 3H6L5 7 4 3H3zm4 0l-1 6h1l1-6H7zm3 0l-.5 6h1l1.5-6H10zm4 0h-1l-1 6h1l.2-1h1.2l.2 1h1l-.6-6zm-.8 4h-.8l.4-2 .4 2z" fill="#1A1F71"/>
+                      <svg width="16" height="10" viewBox="0 0 32 20" fill="none">
+                        <path d="M13.8 6L11.2 14h2.4L16.2 6h-2.4zM9.8 6L7.4 11.6 6.8 8.8C6.6 7.8 5.8 6.8 4.8 6.4L2 6v.4h2.8c.8 0 1.4.4 1.6 1L8.2 14h2.4L14 6H9.8zM22.4 6c-.8 0-1.4.4-1.4 1L20.6 14h2.4l.4-1h2.8l.4 1H29L26.8 6h-4.4zm.8 4.4l1.2-3.2.6 3.2h-1.8zM18.6 6L17.4 14h2.4L21 6h-2.4z" fill="#1A1F71"/>
                       </svg>
                     </div>
                     {/* Mastercard */}
                     <div className="w-8 h-5 bg-white border border-gray-200 rounded flex items-center justify-center shadow-sm">
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                        <rect width="20" height="12" rx="2" fill="white"/>
-                        <circle cx="7" cy="6" r="4" fill="#EB001B"/>
-                        <circle cx="13" cy="6" r="4" fill="#F79E1B"/>
-                        <path d="M10 3c1 1 1 3 0 6-1-3-1-5 0-6z" fill="#FF5F00"/>
+                      <svg width="16" height="10" viewBox="0 0 24 16" fill="none">
+                        <circle cx="8" cy="8" r="6" fill="#EB001B"/>
+                        <circle cx="16" cy="8" r="6" fill="#F79E1B"/>
+                        <path d="M12 4c-1.2 1.2-2 2.8-2 4s.8 2.8 2 4c1.2-1.2 2-2.8 2-4s-.8-2.8-2-4z" fill="#FF5F00"/>
                       </svg>
                     </div>
                     {/* UPI */}
-                    <div className="w-8 h-5 bg-white border border-gray-200 rounded flex items-center justify-center shadow-sm">
-                      <svg width="20" height="12" viewBox="0 0 20 12" fill="none">
-                        <rect width="20" height="12" rx="2" fill="#FF6600"/>
-                        <path d="M3 3v4h1V4h1v3h1V3H3zm4 0v4h1V4h1v3h1V3H7zm4 0v4h1V3h-1zm3 0v4h1V3h-1z" fill="white"/>
-                        <circle cx="10" cy="6" r="1" fill="white"/>
-                        <circle cx="14" cy="6" r="1" fill="white"/>
+                    <div className="w-8 h-5 bg-gradient-to-r from-orange-500 to-orange-600 rounded flex items-center justify-center shadow-sm">
+                      <svg width="16" height="10" viewBox="0 0 24 16" fill="none">
+                        <path d="M2 4v6h2V6h2v4h2V4H2zm6 0v6h2V6h2v4h2V4h-6zm8 0v6h2V4h-2zm4 0v6h2V4h-2z" fill="white"/>
+                        <circle cx="16" cy="8" r="1.5" fill="white"/>
+                      </svg>
+                    </div>
+                    
+                    {/* Paytm */}
+                    <div className="w-8 h-5 bg-gradient-to-r from-blue-500 to-blue-600 rounded flex items-center justify-center shadow-sm">
+                      <svg width="16" height="10" viewBox="0 0 24 16" fill="none">
+                        <path d="M3 4h3c1.5 0 2.5 1 2.5 2.5S7.5 9 6 9H3V4zm0 6h2.5l2 3h2L7.5 10H6c2 0 3.5-1.5 3.5-3.5S8 3 6 3H1v10h2v-3z" fill="white"/>
+                        <path d="M12 4v1h2v1h-1v1h1v1h-2v1h3V4h-3zm4 0v6h1V6h1v4h1V4h-3z" fill="white"/>
+                        <circle cx="20" cy="8" r="1.5" fill="white"/>
                       </svg>
                     </div>
                   </div>

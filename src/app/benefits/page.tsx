@@ -10,6 +10,7 @@ import { Container } from "@/components/Container";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { FloatingNav } from "@/components/FloatingNav";
+import { NoticeBar } from "@/components/NoticeBar";
 import { Footer } from "@/components/Footer";
 
 // Animation variants
@@ -77,36 +78,56 @@ export default function BenefitsPage() {
 
   // Load cart count from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      const cartItems = JSON.parse(savedCart);
-      const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
-      setCartCount(totalItems);
-    }
-
-    // Listen for cart updates
-    const handleStorageChange = () => {
+    const updateCartCount = () => {
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
-        const cartItems = JSON.parse(savedCart);
-        const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
-        setCartCount(totalItems);
+        try {
+          const cartItems = JSON.parse(savedCart);
+          const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
+          setCartCount(totalItems);
+        } catch (error) {
+          console.error("Error parsing cart:", error);
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
       }
     };
 
+    // Initial load
+    updateCartCount();
+
+    // Listen for cart updates from custom events
+    const handleCartUpdate = (event: CustomEvent) => {
+      setCartCount(event.detail.totalItems);
+    };
+
+    // Listen for storage changes (from other tabs)
+    const handleStorageChange = () => {
+      updateCartCount();
+    };
+
     if (typeof window !== 'undefined') {
+      window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
       window.addEventListener("storage", handleStorageChange);
-      return () => window.removeEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+        window.removeEventListener("storage", handleStorageChange);
+      };
     }
   }, []);
 
   return (
     <div className="min-h-screen bg-brand-fg">
+      {/* Notice Bar */}
+      <NoticeBar />
+      
       {/* Floating Navigation */}
       <FloatingNav cartCount={cartCount} />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-brand/5 via-white to-brand/10">
+      <section className="pt-40 pb-16 bg-gradient-to-br from-brand/5 via-white to-brand/10">
         <Container>
           <motion.div
             className="max-w-4xl mx-auto text-center"
@@ -126,25 +147,25 @@ export default function BenefitsPage() {
 
             <motion.h1 
               variants={fadeInUp}
-              className="text-4xl md:text-6xl font-bold text-ink mb-6"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-ink mb-4 leading-tight"
             >
               The Complete Guide to
-              <span className="text-brand block mt-2">Healthy Sugar Benefits</span>
+              <span className="text-brand block mt-1 text-2xl md:text-3xl lg:text-4xl">Healthy Sugar Benefits</span>
             </motion.h1>
 
             <motion.p 
               variants={fadeInUp}
-              className="text-xl text-gray-600 mb-8 leading-relaxed"
+              className="text-lg text-gray-600 mb-6 leading-relaxed"
             >
               Discover why millions are making the switch from refined sugar to stevia-based alternatives. 
               Learn about the science, health benefits, and positive impact on your life and the environment.
             </motion.p>
 
-            <motion.div variants={fadeInUp}>
-              <Button size="lg" className="mr-4">
+            <motion.div variants={fadeInUp} className="flex flex-wrap justify-center gap-3">
+              <Button size="default" className="px-6">
                 Shop Healthy Sugar
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="default" className="px-6">
                 Download Health Guide
               </Button>
             </motion.div>
@@ -163,10 +184,10 @@ export default function BenefitsPage() {
             className="max-w-6xl mx-auto"
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Why You Should Avoid Refined Sugar
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Understanding the hidden dangers of refined sugar is the first step toward better health. 
                 Here's what science tells us about its impact on your body.
               </p>
@@ -226,10 +247,10 @@ export default function BenefitsPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 The Health Benefits of Stevia
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Discover how switching to stevia can transform your health and wellbeing. 
                 Backed by scientific research and trusted by healthcare professionals worldwide.
               </p>
@@ -250,8 +271,8 @@ export default function BenefitsPage() {
                         </div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-ink mb-3">{benefit.title}</h3>
-                        <p className="text-gray-600 mb-4">{benefit.description}</p>
+                        <h3 className="text-lg font-bold text-ink mb-3">{benefit.title}</h3>
+                        <p className="text-gray-600 mb-4 text-sm leading-relaxed">{benefit.description}</p>
                         <ul className="space-y-2">
                           {benefit.details.map((detail, idx) => (
                             <li key={idx} className="flex items-center text-sm text-gray-500">
@@ -280,10 +301,10 @@ export default function BenefitsPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
                 Our Impact on Global Health
               </h2>
-              <p className="text-xl text-white/90 max-w-3xl mx-auto">
+              <p className="text-lg text-white/90 max-w-2xl mx-auto">
                 At The Healthy Sugar Company, we're not just selling products – we're leading a movement 
                 toward healthier living and sustainable practices that benefit everyone.
               </p>
@@ -300,8 +321,8 @@ export default function BenefitsPage() {
                   <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <stat.icon className="w-8 h-8 text-white" />
                   </div>
-                  <div className="text-3xl md:text-4xl font-bold mb-2">{stat.number}</div>
-                  <div className="text-white/80">{stat.label}</div>
+                  <div className="text-2xl md:text-3xl font-bold mb-2">{stat.number}</div>
+                  <div className="text-white/80 text-sm">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
@@ -309,22 +330,22 @@ export default function BenefitsPage() {
             <motion.div variants={fadeInUp} className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="text-center">
-                  <h3 className="text-xl font-bold mb-4">Our Mission</h3>
-                  <p className="text-white/90">
+                  <h3 className="text-lg font-bold mb-4">Our Mission</h3>
+                  <p className="text-white/90 text-sm leading-relaxed">
                     To make healthy, plant-based sweeteners accessible to everyone, 
                     promoting better health outcomes and sustainable living practices.
                   </p>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-xl font-bold mb-4">Our Vision</h3>
-                  <p className="text-white/90">
+                  <h3 className="text-lg font-bold mb-4">Our Vision</h3>
+                  <p className="text-white/90 text-sm leading-relaxed">
                     A world where everyone has access to healthy sugar alternatives, 
                     reducing the global burden of diet-related diseases.
                   </p>
                 </div>
                 <div className="text-center">
-                  <h3 className="text-xl font-bold mb-4">Our Values</h3>
-                  <p className="text-white/90">
+                  <h3 className="text-lg font-bold mb-4">Our Values</h3>
+                  <p className="text-white/90 text-sm leading-relaxed">
                     Transparency, sustainability, and unwavering commitment to 
                     improving lives through natural, science-backed solutions.
                   </p>
@@ -345,10 +366,10 @@ export default function BenefitsPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Backed by Science
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Our claims aren't just marketing – they're supported by extensive scientific research 
                 and clinical studies from leading institutions worldwide.
               </p>
@@ -360,11 +381,11 @@ export default function BenefitsPage() {
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-2xl">🔬</span>
                   </div>
-                  <h3 className="text-xl font-bold text-ink mb-4">Clinical Studies</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-bold text-ink mb-4">Clinical Studies</h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     Over 200 peer-reviewed studies confirm stevia's safety and health benefits.
                   </p>
-                  <Button variant="outline" size="sm">View Research</Button>
+                  <Button variant="outline" size="sm" className="text-sm px-4 py-2">View Research</Button>
                 </Card>
               </motion.div>
 
@@ -373,11 +394,11 @@ export default function BenefitsPage() {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-2xl">🏥</span>
                   </div>
-                  <h3 className="text-xl font-bold text-ink mb-4">Medical Approval</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-bold text-ink mb-4">Medical Approval</h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     Approved by FDA, WHO, and healthcare organizations in 60+ countries.
                   </p>
-                  <Button variant="outline" size="sm">Learn More</Button>
+                  <Button variant="outline" size="sm" className="text-sm px-4 py-2">Learn More</Button>
                 </Card>
               </motion.div>
 
@@ -386,11 +407,11 @@ export default function BenefitsPage() {
                   <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <span className="text-2xl">👨‍⚕️</span>
                   </div>
-                  <h3 className="text-xl font-bold text-ink mb-4">Doctor Recommended</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-bold text-ink mb-4">Doctor Recommended</h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     Recommended by nutritionists and doctors for diabetes and weight management.
                   </p>
-                  <Button variant="outline" size="sm">Find Doctors</Button>
+                  <Button variant="outline" size="sm" className="text-sm px-4 py-2">Find Doctors</Button>
                 </Card>
               </motion.div>
             </div>
@@ -408,10 +429,10 @@ export default function BenefitsPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Latest Health Insights
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Stay informed with the latest research, tips, and insights about healthy living, 
                 nutrition science, and the benefits of natural sweeteners.
               </p>
@@ -452,10 +473,10 @@ export default function BenefitsPage() {
                       </div>
                       
                       <div className="p-6">
-                        <h3 className="text-lg font-bold text-ink mb-3 group-hover:text-brand transition-colors line-clamp-2">
+                        <h3 className="text-base font-bold text-ink mb-3 group-hover:text-brand transition-colors line-clamp-2">
                           {article.title}
                         </h3>
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        <p className="text-gray-600 text-xs mb-4 line-clamp-3 leading-relaxed">
                           {article.excerpt}
                         </p>
                         
@@ -476,7 +497,7 @@ export default function BenefitsPage() {
                           </div>
                         </div>
                         
-                        <Button variant="outline" size="sm" className="w-full">
+                        <Button variant="outline" size="sm" className="w-full text-xs px-3 py-1">
                           Read Article
                         </Button>
                       </div>
@@ -487,7 +508,7 @@ export default function BenefitsPage() {
             </div>
 
             <motion.div variants={fadeInUp} className="text-center mt-12">
-              <Button size="lg">
+              <Button size="default" className="px-6">
                 View All Articles
               </Button>
             </motion.div>
@@ -505,18 +526,18 @@ export default function BenefitsPage() {
             variants={fadeInUp}
             className="text-center max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
               Ready to Transform Your Health?
             </h2>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-lg text-white/90 mb-6">
               Join thousands of people who have already made the switch to healthier living. 
               Start your journey today with our premium stevia-based sweeteners.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary">
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button size="default" variant="secondary" className="px-6">
                 Shop Now
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-brand">
+              <Button size="default" variant="outline" className="border-white text-white hover:bg-white hover:text-brand px-6">
                 Get Free Sample
               </Button>
             </div>

@@ -22,24 +22,27 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
     onAddToCart(product.id);
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on buttons or interactive elements
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('a[href]')) {
+      return;
+    }
+    // Navigate to product page
+    window.location.href = `/product/${product.id}`;
+  };
+
   return (
     <motion.div
-      className="group"
+      className="group cursor-pointer"
       whileHover={{ y: -8 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      onClick={handleCardClick}
     >
-      {/* Mobile: Entire card is clickable, Desktop: Normal behavior */}
       <div className="relative">
-        {/* Mobile: Invisible overlay link for entire card */}
-        <Link 
-          href={`/product/${product.id}`} 
-          className="absolute inset-0 z-10 sm:hidden"
-          aria-label={`View ${product.name} details`}
-        />
-        
-        <Card hover className="h-[500px] sm:h-[600px] overflow-hidden flex flex-col">
+        <Card hover className="h-[420px] sm:h-[480px] overflow-hidden flex flex-col">
           {/* Product Image */}
-          <div className="relative h-48 sm:h-64 overflow-hidden">
+          <div className="relative h-40 sm:h-48 overflow-hidden">
             <Image
               src={product.image.src}
               alt={product.image.alt}
@@ -57,21 +60,12 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               </div>
             )}
 
-            {/* Hover Overlay with View Product Button - Desktop only */}
-            <div className="hidden sm:flex absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center justify-center">
-              <Link href={`/product/${product.id}`}>
-                <Button variant="outline" size="sm" className="bg-white/90 hover:bg-white">
-                  <Eye className="h-4 w-4 mr-2" />
-                  View Product
-                </Button>
-              </Link>
-            </div>
           </div>
 
           {/* Card Content - Fixed height with flex layout */}
-          <CardContent className="p-4 sm:p-6 flex flex-col h-64 sm:h-80">
+          <CardContent className="p-4 sm:p-5 flex flex-col h-52 sm:h-60">
             {/* Product Info - Adjusted height section */}
-            <div className="mb-3 sm:mb-4 h-24 sm:h-28">
+            <div className="mb-2 sm:mb-3 h-20 sm:h-24">
               <h3 className="font-bold text-base sm:text-lg text-ink mb-1 group-hover:text-brand transition-colors line-clamp-2 min-h-[2.5rem] sm:min-h-[3.5rem]">
                 {product.name}
               </h3>
@@ -82,7 +76,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             </div>
 
             {/* Rating - Fixed height section */}
-            <div className="flex items-center mb-3 sm:mb-4 h-5 sm:h-6">
+            <div className="flex items-center mb-2 sm:mb-3 h-5 sm:h-6">
               <div className="flex items-center space-x-1">
                 {[...Array(5)].map((_, i) => (
                   <Star
@@ -106,7 +100,7 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
             {/* Price Section - Fixed at bottom */}
             <div className="mt-auto">
-              <div className="mb-3 text-center">
+              <div className="mb-2 text-center">
                 <span className="text-2xl font-bold text-brand">
                   {formatINR(product.price)}
                 </span>
@@ -114,14 +108,6 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               
               {/* Action Buttons */}
               <div className="space-y-2">
-                {/* View Details button - Desktop only */}
-                <Link href={`/product/${product.id}`} className="hidden sm:block">
-                  <Button variant="outline" className="w-full" size="sm">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
-                </Link>
-                
                 {/* Add to Cart button - Always visible, higher z-index on mobile */}
                 <Button
                   onClick={handleAddToCart}
@@ -134,8 +120,8 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
               </div>
               
               {/* Free shipping note */}
-              <div className="text-xs text-gray-500 mt-2 text-center">
-                Free shipping over ₹999
+              <div className="text-xs text-gray-500 mt-1 text-center">
+                Free shipping on first order
               </div>
             </div>
           </CardContent>

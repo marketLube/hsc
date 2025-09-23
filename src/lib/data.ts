@@ -84,6 +84,24 @@ export const USE_CASES: UseCase[] = [
     name: "Baking",
     description: "Heat-stable sweetness for all your baking needs",
     products: ["powder", "syrup"]
+  },
+  {
+    id: "smoothies",
+    name: "Smoothies",
+    description: "Natural sweetness that blends perfectly with fruits and vegetables",
+    products: ["syrup", "powder"]
+  },
+  {
+    id: "desserts",
+    name: "Desserts",
+    description: "Create guilt-free desserts without compromising on taste",
+    products: ["powder", "syrup", "tablets"]
+  },
+  {
+    id: "yogurt",
+    name: "Yogurt",
+    description: "Transform plain yogurt into a delicious healthy treat",
+    products: ["tablets", "syrup", "sachets"]
   }
 ];
 
@@ -111,6 +129,62 @@ export const TESTIMONIALS: Testimonial[] = [
     rating: 4,
     text: "Love the sachets for travel. Perfect portion size and so convenient to carry.",
     location: "Bangalore"
+  },
+  {
+    id: "testimonial-4",
+    name: "Vikram Singh",
+    avatar: "/images/testimonial-1.svg",
+    rating: 5,
+    text: "Meri wife ko diabetes hai, but ab wo apni morning tea enjoy kar sakti hai. Taste bilkul sugar jaisa hai!",
+    location: "Jaipur"
+  },
+  {
+    id: "testimonial-5",
+    name: "Meera Nair",
+    avatar: "/images/testimonial-2.svg",
+    rating: 5,
+    text: "I was skeptical at first, but this stevia powder works perfectly in my South Indian filter coffee. No bitter aftertaste at all!",
+    location: "Chennai"
+  },
+  {
+    id: "testimonial-6",
+    name: "Arjun Reddy",
+    avatar: "/images/testimonial-3.svg",
+    rating: 4,
+    text: "Been using it for 3 months now. My HbA1c levels have improved and I don't miss regular sugar anymore.",
+    location: "Hyderabad"
+  },
+  {
+    id: "testimonial-7",
+    name: "Kavita Joshi",
+    avatar: "/images/testimonial-1.svg",
+    rating: 5,
+    text: "Perfect for my weight loss journey! I can still enjoy my evening chai without any guilt. Highly recommended!",
+    location: "Pune"
+  },
+  {
+    id: "testimonial-8",
+    name: "Rohit Gupta",
+    avatar: "/images/testimonial-2.svg",
+    rating: 4,
+    text: "The tablets are so convenient for office use. Just drop one in my tea and it's perfectly sweet. Great product!",
+    location: "Gurgaon"
+  },
+  {
+    id: "testimonial-9",
+    name: "Sunita Devi",
+    avatar: "/images/testimonial-3.svg",
+    rating: 5,
+    text: "Mere bachche bhi ise pasand karte hain. Ab ghar mein sirf yahi use karte hain. Health ke liye bahut accha hai.",
+    location: "Lucknow"
+  },
+  {
+    id: "testimonial-10",
+    name: "Karthik Menon",
+    avatar: "/images/testimonial-1.svg",
+    rating: 4,
+    text: "Works great in my protein shakes and smoothies. No weird aftertaste like other artificial sweeteners. Will definitely reorder!",
+    location: "Kochi"
   }
 ];
 

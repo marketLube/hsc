@@ -108,7 +108,7 @@ export function Newsletter() {
                         setError("");
                       }}
                       placeholder="Enter your email address"
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition-colors"
+                      className="w-full h-16 px-4 rounded-xl border border-gray-300 focus:border-brand focus:ring-2 focus:ring-brand/20 outline-none transition-colors"
                       disabled={isLoading}
                     />
                   </div>

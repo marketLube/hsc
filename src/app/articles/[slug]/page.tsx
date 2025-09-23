@@ -41,25 +41,44 @@ export default function ArticlePage({ params }: ArticlePageProps) {
 
   // Load cart count from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      const cartItems = JSON.parse(savedCart);
-      const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
-      setCartCount(totalItems);
-    }
-
-    // Listen for cart updates
-    const handleStorageChange = () => {
+    const updateCartCount = () => {
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
-        const cartItems = JSON.parse(savedCart);
-        const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
-        setCartCount(totalItems);
+        try {
+          const cartItems = JSON.parse(savedCart);
+          const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
+          setCartCount(totalItems);
+        } catch (error) {
+          console.error("Error parsing cart:", error);
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
       }
     };
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
+    // Initial load
+    updateCartCount();
+
+    // Listen for cart updates from custom events
+    const handleCartUpdate = (event: CustomEvent) => {
+      setCartCount(event.detail.totalItems);
+    };
+
+    // Listen for storage changes (from other tabs)
+    const handleStorageChange = () => {
+      updateCartCount();
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
+      window.addEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+        window.removeEventListener("storage", handleStorageChange);
+      };
+    }
   }, []);
 
   // Load article data

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, User, ShoppingCart, Menu, X } from "lucide-react";
+import { User, ShoppingCart, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { Container } from "./Container";
 import { Button } from "./Button";
@@ -20,6 +20,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
   const [currentCartCount, setCurrentCartCount] = useState(cartCount);
   const [activeSection, setActiveSection] = useState("home");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [currentPath, setCurrentPath] = useState("");
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -40,12 +41,25 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
       setCurrentCartCount(event.detail.totalItems);
     };
 
-    // Initial check
+    // Track current path
+    const updateCurrentPath = () => {
+      if (typeof window !== 'undefined') {
+        setCurrentPath(window.location.pathname);
+      }
+    };
+
+    // Initial checks
     checkNoticeVisibility();
+    updateCurrentPath();
 
     // Listen for notice dismissal events
     const handleNoticeChange = () => {
       checkNoticeVisibility();
+    };
+
+    // Listen for navigation changes
+    const handlePopState = () => {
+      updateCurrentPath();
     };
 
     if (typeof window !== 'undefined') {
@@ -53,12 +67,14 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
       window.addEventListener("storage", handleNoticeChange);
       window.addEventListener("notice-dismissed", handleNoticeChange);
       window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
+      window.addEventListener("popstate", handlePopState);
       
       return () => {
         window.removeEventListener("scroll", handleScroll);
         window.removeEventListener("storage", handleNoticeChange);
         window.removeEventListener("notice-dismissed", handleNoticeChange);
         window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+        window.removeEventListener("popstate", handlePopState);
       };
     }
   }, []);
@@ -131,30 +147,36 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
 
   const navItems = [
     { name: "Home", href: "/#home", sectionId: "home" },
-    { name: "Shop", href: "/#products", sectionId: "products" },
+    { name: "About", href: "/about", sectionId: "about" },
     { name: "Benefits", href: "/benefits", sectionId: "benefits" },
-    { name: "Science", href: "/#science", sectionId: "science" },
+    { name: "Science", href: "/science", sectionId: "science" },
     { name: "Reviews", href: "/#testimonials", sectionId: "testimonials" },
     { name: "Contact", href: "/contact", sectionId: "contact" },
   ];
 
   // Smooth scroll to section
   const scrollToSection = (sectionId: string, event: React.MouseEvent) => {
-    event.preventDefault();
-    
     // Close mobile menu if open
     setIsMobileMenuOpen(false);
     
-    // If we're on a different page (like /benefits), navigate first
+    // For dedicated pages (about, benefits, science, contact), let the Link handle navigation
+    if (sectionId === "about" || sectionId === "benefits" || sectionId === "science" || sectionId === "contact") {
+      return; // Let the Link component handle the navigation
+    }
+    
+    // For home page sections, prevent default and scroll
+    event.preventDefault();
+    
     if (typeof window !== 'undefined') {
-      if (window.location.pathname !== "/" && !sectionId.includes("benefits") && !sectionId.includes("science")) {
+      // If we're on a different page, navigate to home first
+      if (window.location.pathname !== "/") {
         window.location.href = `/#${sectionId}`;
         return;
       }
       
       const element = document.getElementById(sectionId);
       if (element) {
-        const navHeight = 100; // Account for floating nav height
+        const navHeight = 120; // Account for floating nav height + notice bar
         const elementPosition = element.offsetTop - navHeight;
         
         window.scrollTo({
@@ -170,9 +192,10 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
       className={cn(
         "fixed left-0 right-0 z-50 transition-all duration-300",
         // Adjust top position based on notice bar visibility and scroll state
+        // Moved higher on mobile to accommodate floating action buttons
         isNoticeVisible 
-          ? (isScrolled ? "top-12" : "top-16") // Notice bar visible: more spacing
-          : (isScrolled ? "top-2" : "top-4")   // Notice bar hidden: normal spacing
+          ? (isScrolled ? "top-8 sm:top-12" : "top-12 sm:top-16") // Notice bar visible: higher on mobile
+          : (isScrolled ? "top-1 sm:top-2" : "top-2 sm:top-4")   // Notice bar hidden: higher on mobile
       )}
       initial={{ y: -100 }}
       animate={{ y: 0 }}
@@ -206,9 +229,10 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
             <div className="hidden lg:flex items-center space-x-8">
               {navItems.map((item) => {
                 const isActive = activeSection === item.sectionId || 
-                  (typeof window !== 'undefined' && window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
-                  (typeof window !== 'undefined' && window.location.pathname === "/science" && item.sectionId === "science") ||
-                  (typeof window !== 'undefined' && window.location.pathname === "/contact" && item.sectionId === "contact");
+                  (currentPath === "/about" && item.sectionId === "about") ||
+                  (currentPath === "/benefits" && item.sectionId === "benefits") ||
+                  (currentPath === "/science" && item.sectionId === "science") ||
+                  (currentPath === "/contact" && item.sectionId === "contact");
                 
                 return (
                   <motion.div key={item.name} className="relative">
@@ -254,59 +278,85 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center space-x-3">
-              {/* Search */}
-              <button
-                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                aria-label="Search"
-              >
-                <Search className="h-5 w-5 text-gray-600" />
-              </button>
+            <div className="flex items-center">
+              {/* Icon Group - moved left, tighter spacing */}
+              <div className="flex items-center space-x-1">
+                {/* Account */}
+                <Link
+                  href="/profile"
+                  className={cn(
+                    "p-2 rounded-xl transition-colors",
+                    currentPath === "/profile"
+                      ? "bg-brand/10 hover:bg-brand/20"
+                      : "hover:bg-gray-100"
+                  )}
+                  aria-label="Account"
+                >
+                  <User className={cn(
+                    "h-5 w-5 transition-colors",
+                    currentPath === "/profile"
+                      ? "text-brand"
+                      : "text-gray-600"
+                  )} />
+                </Link>
 
-              {/* Account */}
-              <button
-                className="p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                aria-label="Account"
-              >
-                <User className="h-5 w-5 text-gray-600" />
-              </button>
+                {/* Cart */}
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                  aria-label={`Cart (${currentCartCount} items)`}
+                >
+                  <ShoppingCart className="h-5 w-5 text-gray-600" />
+                  {currentCartCount > 0 && (
+                    <motion.span
+                      className="absolute -top-1 -right-1 bg-brand text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    >
+                      {currentCartCount > 99 ? "99+" : currentCartCount}
+                    </motion.span>
+                  )}
+                </button>
 
-              {/* Cart */}
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="relative p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                aria-label={`Cart (${currentCartCount} items)`}
-              >
-                <ShoppingCart className="h-5 w-5 text-gray-600" />
-                {currentCartCount > 0 && (
-                  <motion.span
-                    className="absolute -top-1 -right-1 bg-brand text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                  >
-                    {currentCartCount > 99 ? "99+" : currentCartCount}
-                  </motion.span>
-                )}
-              </button>
+                {/* Mobile Menu Button */}
+                <button
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
+                  aria-label="Toggle mobile menu"
+                >
+                  {isMobileMenuOpen ? (
+                    <X className="h-5 w-5 text-gray-600" />
+                  ) : (
+                    <Menu className="h-5 w-5 text-gray-600" />
+                  )}
+                </button>
+              </div>
 
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                aria-label="Toggle mobile menu"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="h-5 w-5 text-gray-600" />
-                ) : (
-                  <Menu className="h-5 w-5 text-gray-600" />
-                )}
-              </button>
-
-              {/* Shop Button */}
-              <Button size="sm" className="hidden sm:inline-flex">
-                Shop
-              </Button>
+              {/* Shop Button - more space on the left */}
+              <div className="ml-4">
+                <Button size="sm" className="hidden sm:inline-flex relative overflow-hidden">
+                  <span className="relative z-10">Shop</span>
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    animate={{
+                      x: ['-100%', '100%'],
+                      opacity: [0, 1, 1, 0]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatDelay: 0,
+                      ease: "linear"
+                    }}
+                    style={{
+                      width: '50%',
+                      height: '100%',
+                      transform: 'skewX(-20deg)'
+                    }}
+                  />
+                </Button>
+              </div>
             </div>
           </div>
         </motion.nav>
@@ -330,6 +380,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                 <div className="py-4">
                   {navItems.map((item, index) => {
                     const isActive = activeSection === item.sectionId || 
+                      (typeof window !== 'undefined' && window.location.pathname === "/about" && item.sectionId === "about") ||
                       (typeof window !== 'undefined' && window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
                       (typeof window !== 'undefined' && window.location.pathname === "/science" && item.sectionId === "science") ||
                       (typeof window !== 'undefined' && window.location.pathname === "/contact" && item.sectionId === "contact");
@@ -367,8 +418,26 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                   
                   {/* Mobile Shop Button */}
                   <div className="px-6 pt-4 border-t border-gray-100 mt-2">
-                    <Button size="sm" className="w-full">
-                      Shop Now
+                    <Button size="sm" className="w-full relative overflow-hidden">
+                      <span className="relative z-10">Shop Now</span>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                        animate={{
+                          x: ['-100%', '100%'],
+                          opacity: [0, 1, 1, 0]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          repeatDelay: 0,
+                          ease: "linear"
+                        }}
+                        style={{
+                          width: '50%',
+                          height: '100%',
+                          transform: 'skewX(-20deg)'
+                        }}
+                      />
                     </Button>
                   </div>
                 </div>

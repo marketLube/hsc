@@ -10,6 +10,7 @@ import { Container } from "@/components/Container";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
 import { FloatingNav } from "@/components/FloatingNav";
+import { NoticeBar } from "@/components/NoticeBar";
 import { Footer } from "@/components/Footer";
 import { ProductCard } from "@/components/ProductCard";
 import { PRODUCTS } from "@/lib/products";
@@ -102,36 +103,56 @@ export default function SciencePage() {
 
   // Load cart count from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    if (savedCart) {
-      const cartItems = JSON.parse(savedCart);
-      const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
-      setCartCount(totalItems);
-    }
-
-    // Listen for cart updates
-    const handleStorageChange = () => {
+    const updateCartCount = () => {
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
-        const cartItems = JSON.parse(savedCart);
-        const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
-        setCartCount(totalItems);
+        try {
+          const cartItems = JSON.parse(savedCart);
+          const totalItems = Object.values(cartItems).reduce((sum: number, count: any) => sum + count, 0);
+          setCartCount(totalItems);
+        } catch (error) {
+          console.error("Error parsing cart:", error);
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
       }
     };
 
+    // Initial load
+    updateCartCount();
+
+    // Listen for cart updates from custom events
+    const handleCartUpdate = (event: CustomEvent) => {
+      setCartCount(event.detail.totalItems);
+    };
+
+    // Listen for storage changes (from other tabs)
+    const handleStorageChange = () => {
+      updateCartCount();
+    };
+
     if (typeof window !== 'undefined') {
+      window.addEventListener("cartUpdated", handleCartUpdate as EventListener);
       window.addEventListener("storage", handleStorageChange);
-      return () => window.removeEventListener("storage", handleStorageChange);
+
+      return () => {
+        window.removeEventListener("cartUpdated", handleCartUpdate as EventListener);
+        window.removeEventListener("storage", handleStorageChange);
+      };
     }
   }, []);
 
   return (
     <div className="min-h-screen bg-brand-fg">
+      {/* Notice Bar */}
+      <NoticeBar />
+      
       {/* Floating Navigation */}
       <FloatingNav cartCount={cartCount} />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-blue-50 via-white to-green-50">
+      <section className="pt-40 pb-16 bg-gradient-to-br from-blue-50 via-white to-green-50">
         <Container>
           <motion.div
             className="max-w-4xl mx-auto text-center"
@@ -151,25 +172,25 @@ export default function SciencePage() {
 
             <motion.h1 
               variants={fadeInUp}
-              className="text-4xl md:text-6xl font-bold text-ink mb-6"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold text-ink mb-4 leading-tight"
             >
               The Science Behind
-              <span className="text-brand block mt-2">Stevia Sweetness</span>
+              <span className="text-brand block mt-1 text-2xl md:text-3xl lg:text-4xl">Stevia Sweetness</span>
             </motion.h1>
 
             <motion.p 
               variants={fadeInUp}
-              className="text-xl text-gray-600 mb-8 leading-relaxed"
+              className="text-lg text-gray-600 mb-6 leading-relaxed"
             >
               Discover the fascinating world of stevia science. From molecular structure to clinical research, 
               explore how nature created the perfect sugar alternative backed by decades of scientific study.
             </motion.p>
 
-            <motion.div variants={fadeInUp}>
-              <Button size="lg" className="mr-4">
+            <motion.div variants={fadeInUp} className="flex flex-wrap justify-center gap-3">
+              <Button size="default" className="px-6">
                 Explore Research
               </Button>
-              <Button variant="outline" size="lg">
+              <Button variant="outline" size="default" className="px-6">
                 Download Studies
               </Button>
             </motion.div>
@@ -187,10 +208,10 @@ export default function SciencePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
                 Decades of Scientific Research
               </h2>
-              <p className="text-xl text-white/90 max-w-3xl mx-auto">
+              <p className="text-lg text-white/90 max-w-2xl mx-auto">
                 Stevia is one of the most extensively studied natural sweeteners, with research spanning 
                 biochemistry, nutrition, safety, and health benefits.
               </p>
@@ -207,16 +228,16 @@ export default function SciencePage() {
                   <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <stat.icon className="w-8 h-8 text-white" />
                   </div>
-                  <div className="text-3xl md:text-4xl font-bold mb-2">{stat.number}</div>
-                  <div className="text-white/80">{stat.label}</div>
+                  <div className="text-2xl md:text-3xl font-bold mb-2">{stat.number}</div>
+                  <div className="text-white/80 text-sm">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
 
             <motion.div variants={fadeInUp} className="bg-white/10 backdrop-blur-sm rounded-2xl p-8">
               <div className="text-center">
-                <h3 className="text-2xl font-bold mb-4">Global Scientific Recognition</h3>
-                <p className="text-white/90 mb-6">
+                <h3 className="text-lg font-bold mb-4">Global Scientific Recognition</h3>
+                <p className="text-white/90 mb-6 text-sm leading-relaxed">
                   Stevia has been approved by major health authorities worldwide including FDA, EFSA, WHO, 
                   and health agencies in over 60 countries, making it one of the most globally accepted natural sweeteners.
                 </p>
@@ -243,10 +264,10 @@ export default function SciencePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Scientific Discoveries
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Breakthrough research has unlocked the secrets of stevia's sweetness, revealing the complex 
                 science behind this remarkable natural compound.
               </p>
@@ -267,8 +288,8 @@ export default function SciencePage() {
                         </div>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-ink mb-3">{discovery.title}</h3>
-                        <p className="text-gray-600 mb-4">{discovery.description}</p>
+                        <h3 className="text-lg font-bold text-ink mb-3">{discovery.title}</h3>
+                        <p className="text-gray-600 mb-4 text-sm leading-relaxed">{discovery.description}</p>
                         <ul className="space-y-2">
                           {discovery.details.map((detail, idx) => (
                             <li key={idx} className="flex items-center text-sm text-gray-500">
@@ -297,10 +318,10 @@ export default function SciencePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Science at a Glance
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Visual representations of key scientific data that demonstrate stevia's superior properties 
                 and the sophisticated processes behind its production.
               </p>
@@ -310,7 +331,7 @@ export default function SciencePage() {
               {/* Comparison Infographic */}
               <motion.div variants={fadeInUp}>
                 <Card className="p-8">
-                  <h3 className="text-2xl font-bold text-ink mb-6 text-center">
+                  <h3 className="text-lg font-bold text-ink mb-6 text-center">
                     {infographics[0]?.title}
                   </h3>
                   <div className="space-y-4">
@@ -341,7 +362,7 @@ export default function SciencePage() {
               {/* Process Infographic */}
               <motion.div variants={fadeInUp} className="flex flex-col h-full">
                 <Card className="p-8 flex-1">
-                  <h3 className="text-2xl font-bold text-ink mb-6 text-center">
+                  <h3 className="text-lg font-bold text-ink mb-6 text-center">
                     {infographics[1]?.title}
                   </h3>
                   <div className="space-y-6">
@@ -390,10 +411,10 @@ export default function SciencePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Science-Backed Products
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Our stevia products are the result of advanced extraction science and rigorous quality control, 
                 delivering the purest, most consistent sweetening experience.
               </p>
@@ -412,7 +433,7 @@ export default function SciencePage() {
             </div>
 
             <motion.div variants={fadeInUp} className="text-center mt-12">
-              <Button size="lg">
+              <Button size="default" className="px-6">
                 Shop All Products
               </Button>
             </motion.div>
@@ -430,10 +451,10 @@ export default function SciencePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Latest Scientific Research
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Dive deep into the latest research findings, clinical studies, and scientific breakthroughs 
                 that continue to validate stevia's safety and benefits.
               </p>
@@ -474,10 +495,10 @@ export default function SciencePage() {
                       </div>
                       
                       <div className="p-6">
-                        <h3 className="text-lg font-bold text-ink mb-3 group-hover:text-brand transition-colors line-clamp-2">
+                        <h3 className="text-base font-bold text-ink mb-3 group-hover:text-brand transition-colors line-clamp-2">
                           {article.title}
                         </h3>
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        <p className="text-gray-600 text-xs mb-4 line-clamp-3 leading-relaxed">
                           {article.excerpt}
                         </p>
                         
@@ -510,7 +531,7 @@ export default function SciencePage() {
             </div>
 
             <motion.div variants={fadeInUp} className="text-center mt-12">
-              <Button size="lg">
+              <Button size="default" className="px-6">
                 View All Research
               </Button>
             </motion.div>
@@ -528,10 +549,10 @@ export default function SciencePage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeInUp} className="text-center mb-16">
-              <h2 className="text-3xl md:text-5xl font-bold text-ink mb-6">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-3">
                 Health Benefits Backed by Science
               </h2>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Clinical research has identified multiple health benefits of stevia beyond just sweetness, 
                 making it a functional ingredient for better health outcomes.
               </p>
@@ -543,8 +564,8 @@ export default function SciencePage() {
                   <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Heart className="w-8 h-8 text-red-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-ink mb-4">Cardiovascular Health</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-bold text-ink mb-4">Cardiovascular Health</h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     Studies show stevia may help lower blood pressure and support heart health through 
                     vasodilation and anti-inflammatory effects.
                   </p>
@@ -561,8 +582,8 @@ export default function SciencePage() {
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Shield className="w-8 h-8 text-blue-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-ink mb-4">Metabolic Health</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-bold text-ink mb-4">Metabolic Health</h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     Zero glycemic index and potential insulin sensitivity improvements make stevia 
                     ideal for metabolic health and diabetes management.
                   </p>
@@ -579,8 +600,8 @@ export default function SciencePage() {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Leaf className="w-8 h-8 text-green-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-ink mb-4">Antioxidant Properties</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-bold text-ink mb-4">Antioxidant Properties</h3>
+                  <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                     Stevia contains natural antioxidants that may help protect cells from oxidative 
                     stress and support overall health and longevity.
                   </p>
@@ -606,18 +627,18 @@ export default function SciencePage() {
             variants={fadeInUp}
             className="text-center max-w-4xl mx-auto"
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
               Experience Science-Backed Sweetness
             </h2>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-lg text-white/90 mb-6">
               Join the millions who have discovered the perfect balance of taste, health, and science. 
               Try our premium stevia products backed by decades of research.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" variant="secondary">
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button size="default" variant="secondary" className="px-6">
                 Shop Now
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-brand">
+              <Button size="default" variant="outline" className="border-white text-white hover:bg-white hover:text-brand px-6">
                 Download Research Papers
               </Button>
             </div>

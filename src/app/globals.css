@@ -40,11 +40,13 @@ body {
   font-family: var(--font-poppins), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Smooth scrolling */
+/* Smooth scrolling and prevent horizontal overflow */
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 /* Enhanced navbar animations */
@@ -159,4 +161,19 @@ html {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #d63384;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Shadow premium utility */
+.shadow-premium {
+  box-shadow: var(--shadow-premium);
 }
