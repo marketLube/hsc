@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 declare global {
   interface Window {
     google: any;
-    initGooglePlaces: () => void;
+    initGooglePlaces?: () => void;
   }
 }
 

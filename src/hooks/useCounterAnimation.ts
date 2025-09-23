@@ -17,8 +17,8 @@ export function useCounterAnimation({
 }: UseCounterAnimationOptions) {
   const [count, setCount] = useState(start);
   const [hasStarted, setHasStarted] = useState(!startOnView);
-  const elementRef = useRef<HTMLElement>(null);
-  const animationRef = useRef<number>();
+  const elementRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     if (!startOnView) {
