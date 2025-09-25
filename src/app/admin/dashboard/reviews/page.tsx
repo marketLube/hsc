@@ -442,7 +442,7 @@ export default function ReviewsPage() {
             {/* Export Links Filter */}
             <div>
               <select 
-                value={filters.hasExportLinks}
+                value={filters.hasExportLinks === true ? 'true' : filters.hasExportLinks === false ? 'false' : 'all'}
                 onChange={(e) => setFilters(prev => ({ ...prev, hasExportLinks: e.target.value === 'all' ? 'all' : e.target.value === 'true' }))}
                 className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-brand focus:border-brand rounded-md"
               >
