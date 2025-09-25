@@ -181,12 +181,13 @@ export default function AdminDashboard() {
                       <div className={`ml-2 flex items-baseline text-sm font-semibold ${
                         stat.changeType === "increase" 
                           ? "text-green-600" 
-                          : stat.changeType === "decrease" 
-                          ? "text-red-600" 
-                          : "text-gray-500"
+                          : stat.changeType === "neutral"
+                          ? "text-gray-500"
+                          : "text-red-600"
                       }`}>
                         {stat.changeType === "increase" && <ArrowUpRight className="h-4 w-4 mr-1" />}
                         {stat.changeType === "decrease" && <ArrowDownRight className="h-4 w-4 mr-1" />}
+                        {stat.changeType === "neutral" && <span className="h-4 w-4 mr-1" />}
                         {stat.change}
                       </div>
                     </dd>
