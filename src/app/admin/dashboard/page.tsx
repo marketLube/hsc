@@ -47,6 +47,14 @@ const stats = [
     icon: Package,
     period: "active products"
   },
+  {
+    name: "Returns",
+    value: "23",
+    change: "-5.2%",
+    changeType: "decrease" as const,
+    icon: Package,
+    period: "vs last month"
+  },
 ];
 
 const recentOrders = [
