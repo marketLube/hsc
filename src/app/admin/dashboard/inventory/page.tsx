@@ -364,7 +364,7 @@ export default function InventoryPage() {
   const [inventory] = useState<InventoryItem[]>(mockInventory);
 
   // Filter and sort inventory
-  let filteredInventory = inventory.filter((item) => {
+  const filteredInventory = inventory.filter((item) => {
     const matchesSearch = 
       item.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -374,10 +374,7 @@ export default function InventoryPage() {
     const matchesCategory = categoryFilter === "all" || item.category === categoryFilter;
     const matchesWarehouse = warehouseFilter === "all" || item.warehouse.includes(warehouseFilter);
     return matchesSearch && matchesStatus && matchesCategory && matchesWarehouse;
-  });
-
-  // Sort inventory
-  filteredInventory.sort((a, b) => {
+  }).sort((a, b) => {
     let aValue = a[sortField];
     let bValue = b[sortField];
     

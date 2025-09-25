@@ -618,7 +618,7 @@ export default function OrdersPage() {
   const [orders] = useState<Order[]>(mockOrders);
 
   // Filter orders
-  let filteredOrders = orders.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const matchesSearch = 
       order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

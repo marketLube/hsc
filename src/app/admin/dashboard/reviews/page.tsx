@@ -62,7 +62,7 @@ export default function ReviewsPage() {
 
   // Filter and sort reviews
   const filteredAndSortedReviews = useMemo(() => {
-    let filtered = reviews.filter(review => {
+    const filtered = reviews.filter(review => {
       const matchesSearch = filters.search === '' || 
         review.customer.name.toLowerCase().includes(filters.search.toLowerCase()) ||
         review.title.toLowerCase().includes(filters.search.toLowerCase()) ||

@@ -119,7 +119,7 @@ export default function ProductsPage() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Filter and sort products
-  let filteredProducts = extendedProducts.filter((product) => {
+  const filteredProducts = extendedProducts.filter((product) => {
     const matchesSearch = 
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
