@@ -429,7 +429,7 @@ export default function ReviewsPage() {
             {/* Images Filter */}
             <div>
               <select 
-                value={filters.hasImages}
+                value={filters.hasImages === true ? 'true' : filters.hasImages === false ? 'false' : 'all'}
                 onChange={(e) => setFilters(prev => ({ ...prev, hasImages: e.target.value === 'all' ? 'all' : e.target.value === 'true' }))}
                 className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-brand focus:border-brand rounded-md"
               >
