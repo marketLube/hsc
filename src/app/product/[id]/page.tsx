@@ -428,7 +428,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             {/* Thumbnail Gallery */}
             {product.images && product.images.length > 0 && (
               <div className="flex justify-center">
-                <div className="grid grid-cols-5 gap-2 max-w-sm">
+                <div className="grid grid-cols-5 gap-4 max-w-sm">
                   {product.images.map((img, index) => (
                     <button
                       key={index}

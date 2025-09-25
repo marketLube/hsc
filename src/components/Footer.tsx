@@ -41,128 +41,244 @@ export function Footer() {
       <Container>
         {/* Main Footer Content */}
         <div className="py-8 sm:py-12 md:py-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-            {/* Brand Section */}
-            <motion.div
-              className="lg:col-span-1 text-center md:text-left"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="flex items-center justify-center md:justify-start space-x-2 mb-4 sm:mb-6">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm sm:text-base">H</span>
+          {/* Mobile Layout: New Structure */}
+          <div className="block sm:hidden">
+            <div className="space-y-8">
+              {/* Company Details - Center Aligned */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                {/* Brand Section */}
+                <div className="flex items-center justify-center space-x-2 mb-3">
+                  <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm">H</span>
+                  </div>
+                  <span className="font-bold text-base leading-tight">The Healthy Sugar Company</span>
                 </div>
-                <span className="font-bold text-lg sm:text-xl">The Healthy Sugar Company</span>
+                <p className="text-gray-300 leading-relaxed mb-6 text-sm max-w-xs mx-auto">
+                  Making healthier choices accessible with premium stevia-based sweeteners.
+                </p>
+                
+                {/* Contact Info */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-center space-x-2 text-gray-300">
+                    <Mail className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm">hello@healthysugar.com</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2 text-gray-300">
+                    <Phone className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm">+91 6282342985</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2 text-gray-300">
+                    <MapPin className="h-4 w-4 flex-shrink-0" />
+                    <span className="text-sm">Mumbai, Maharashtra, India</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Legal (Left) and Support (Right) */}
+              <div className="grid grid-cols-2 gap-6">
+                {/* Legal - Left */}
+                <motion.div
+                  className="text-left"
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.1 }}
+                >
+                  <h3 className="font-semibold text-sm mb-4">Legal</h3>
+                  <ul className="space-y-2">
+                    {legal.map((link) => (
+                      <li key={link.name}>
+                        <a
+                          href={link.href}
+                          className="text-gray-300 hover:text-white transition-colors text-xs"
+                        >
+                          {link.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+
+                {/* Support - Right */}
+                <motion.div
+                  className="text-left"
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  <h3 className="font-semibold text-sm mb-4">Support</h3>
+                  <ul className="space-y-2">
+                    {support.map((link) => (
+                      <li key={link.name}>
+                        <a
+                          href={link.href}
+                          className="text-gray-300 hover:text-white transition-colors text-xs"
+                        >
+                          {link.name}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
               </div>
-              <p className="text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
-                Making healthier choices accessible with premium stevia-based sweeteners. 
-                Plant-powered sweetness for modern lifestyles.
-              </p>
-              
-              {/* Contact Info */}
-              <div className="space-y-2 sm:space-y-3">
-                <div className="flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300">
-                  <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm">hello@healthysugar.com</span>
-                </div>
-                <div className="flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300">
-                  <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm">+91 6282342985</span>
-                </div>
-                <div className="flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300">
-                  <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
-                  <span className="text-xs sm:text-sm">Mumbai, Maharashtra, India</span>
-                </div>
-              </div>
-            </motion.div>
 
-            {/* Quick Links */}
-            <motion.div
-              className="text-center md:text-left"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1, duration: 0.6 }}
-            >
-              <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-6">Quick Links</h3>
-              <ul className="space-y-2 sm:space-y-3">
-                {quickLinks.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Support */}
-            <motion.div
-              className="text-center md:text-left"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-            >
-              <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-6">Support</h3>
-              <ul className="space-y-2 sm:space-y-3">
-                {support.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            {/* Legal & Social */}
-            <motion.div
-              className="text-center md:text-left"
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-            >
-              <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-6">Legal</h3>
-              <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
-                {legal.map((link) => (
-                  <li key={link.name}>
-                    <a
-                      href={link.href}
-                      className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
-                    >
-                      {link.name}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-
-              {/* Social Links */}
-              <div>
-                <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Follow Us</h4>
-                <div className="flex justify-center md:justify-start space-x-3 sm:space-x-4">
+              {/* Social Links - Center */}
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              >
+                <h4 className="font-semibold mb-4 text-sm">Follow Us</h4>
+                <div className="flex justify-center space-x-4">
                   {socialLinks.map((social) => (
                     <a
                       key={social.name}
                       href={social.href}
-                      className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-brand transition-colors"
+                      className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-brand transition-colors"
                       aria-label={social.name}
                     >
-                      <social.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      <social.icon className="h-5 w-5" />
                     </a>
                   ))}
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Layout: Original Grid */}
+          <div className="hidden sm:block">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+              {/* Brand Section */}
+              <motion.div
+                className="lg:col-span-1 text-center md:text-left"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <div className="flex items-center justify-center md:justify-start space-x-2 mb-4 sm:mb-6">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand rounded-lg flex items-center justify-center">
+                    <span className="text-white font-bold text-sm sm:text-base">H</span>
+                  </div>
+                  <span className="font-bold text-lg sm:text-xl">The Healthy Sugar Company</span>
+                </div>
+                <p className="text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                  Making healthier choices accessible with premium stevia-based sweeteners. 
+                  Plant-powered sweetness for modern lifestyles.
+                </p>
+                
+                {/* Contact Info */}
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300">
+                    <Mail className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">hello@healthysugar.com</span>
+                  </div>
+                  <div className="flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300">
+                    <Phone className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">+91 6282342985</span>
+                  </div>
+                  <div className="flex items-center justify-center md:justify-start space-x-2 sm:space-x-3 text-gray-300">
+                    <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="text-xs sm:text-sm">Mumbai, Maharashtra, India</span>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Quick Links */}
+              <motion.div
+                className="text-center md:text-left"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1, duration: 0.6 }}
+              >
+                <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-6">Quick Links</h3>
+                <ul className="space-y-2 sm:space-y-3">
+                  {quickLinks.map((link) => (
+                    <li key={link.name}>
+                      <a
+                        href={link.href}
+                        className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* Support */}
+              <motion.div
+                className="text-center md:text-left"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+              >
+                <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-6">Support</h3>
+                <ul className="space-y-2 sm:space-y-3">
+                  {support.map((link) => (
+                    <li key={link.name}>
+                      <a
+                        href={link.href}
+                        className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+
+              {/* Legal & Social */}
+              <motion.div
+                className="text-center md:text-left"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+              >
+                <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-6">Legal</h3>
+                <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-8">
+                  {legal.map((link) => (
+                    <li key={link.name}>
+                      <a
+                        href={link.href}
+                        className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
+                      >
+                        {link.name}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Social Links */}
+                <div>
+                  <h4 className="font-semibold mb-3 sm:mb-4 text-sm sm:text-base">Follow Us</h4>
+                  <div className="flex justify-center md:justify-start space-x-3 sm:space-x-4">
+                    {socialLinks.map((social) => (
+                      <a
+                        key={social.name}
+                        href={social.href}
+                        className="w-8 h-8 sm:w-10 sm:h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-brand transition-colors"
+                        aria-label={social.name}
+                      >
+                        <social.icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </div>
 

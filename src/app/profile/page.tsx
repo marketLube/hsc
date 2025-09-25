@@ -30,7 +30,9 @@ import {
   Home,
   Building,
   ArrowLeft,
-  ChevronRight
+  ChevronRight,
+  Menu,
+  X
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -111,7 +113,14 @@ const USER_DATA = {
         { name: "Stevia Tablets", quantity: 1, price: 401 }
       ],
       trackingNumber: "TRK123456789",
-      deliveryDate: "2024-01-18"
+      deliveryDate: "2024-01-18",
+      shipmentDetails: [
+        { status: "Order Confirmed", date: "2024-01-15", time: "10:30 AM", description: "Your order has been confirmed and is being prepared" },
+        { status: "Packed", date: "2024-01-16", time: "2:15 PM", description: "Order packed and ready for shipment" },
+        { status: "Shipped", date: "2024-01-16", time: "6:45 PM", description: "Package dispatched from Mumbai warehouse" },
+        { status: "Out for Delivery", date: "2024-01-18", time: "9:00 AM", description: "Package is out for delivery in your area" },
+        { status: "Delivered", date: "2024-01-18", time: "2:30 PM", description: "Package delivered successfully" }
+      ]
     },
     {
       id: "ORD-2024-002", 
@@ -124,7 +133,12 @@ const USER_DATA = {
         { name: "Stevia Sachets", quantity: 1, price: 449 }
       ],
       trackingNumber: "TRK987654321",
-      estimatedDelivery: "2024-02-02"
+      estimatedDelivery: "2024-02-02",
+      shipmentDetails: [
+        { status: "Order Confirmed", date: "2024-01-28", time: "11:15 AM", description: "Your order has been confirmed and is being prepared" },
+        { status: "Packed", date: "2024-01-29", time: "3:30 PM", description: "Order packed and ready for shipment" },
+        { status: "Shipped", date: "2024-01-30", time: "8:20 AM", description: "Package dispatched from Delhi warehouse" }
+      ]
     },
     {
       id: "ORD-2024-003",
@@ -134,6 +148,9 @@ const USER_DATA = {
       total: 449,
       products: [
         { name: "Stevia Powder Premium", quantity: 1, price: 449 }
+      ],
+      shipmentDetails: [
+        { status: "Order Confirmed", date: "2024-02-10", time: "4:45 PM", description: "Your order has been confirmed and is being prepared" }
       ]
     },
     {
@@ -146,7 +163,11 @@ const USER_DATA = {
         { name: "Stevia Tablets", quantity: 2, price: 449 }
       ],
       refundStatus: "Refunded",
-      refundAmount: 898
+      refundAmount: 898,
+      shipmentDetails: [
+        { status: "Order Confirmed", date: "2024-02-20", time: "1:20 PM", description: "Your order has been confirmed" },
+        { status: "Cancelled", date: "2024-02-20", time: "3:45 PM", description: "Order cancelled as requested by customer" }
+      ]
     }
   ],
   refunds: [
@@ -200,6 +221,19 @@ const STATUS_COLORS = {
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("overview");
   const [cartCount, setCartCount] = useState(0);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [expandedOrders, setExpandedOrders] = useState<Set<string>>(new Set());
+
+  // Toggle order expansion
+  const toggleOrderExpansion = (orderId: string) => {
+    const newExpanded = new Set(expandedOrders);
+    if (newExpanded.has(orderId)) {
+      newExpanded.delete(orderId);
+    } else {
+      newExpanded.add(orderId);
+    }
+    setExpandedOrders(newExpanded);
+  };
 
   // Load cart count from localStorage on mount
   useEffect(() => {
@@ -251,25 +285,30 @@ export default function ProfilePage() {
   ];
 
   const renderOverview = () => (
-    <div className="space-y-6">
-      {/* Profile Header */}
+    <div className="space-y-4 md:space-y-6">
+      {/* Compact Profile Header */}
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-brand rounded-2xl flex items-center justify-center">
-              <span className="text-white font-semibold text-xl">
-                {USER_DATA.name.charAt(0)}
-              </span>
+        <CardContent className="p-4 md:p-6">
+          <div className="flex items-center space-x-3 md:space-x-4">
+            {/* Circular Profile Picture */}
+            <div className="relative">
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-brand to-emerald-600 rounded-full flex items-center justify-center shadow-lg">
+                <span className="text-white font-bold text-lg md:text-xl">
+                  {USER_DATA.name.charAt(0)}
+                </span>
+              </div>
+              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
             </div>
-            <div className="flex-1">
-              <h1 className="text-xl font-semibold text-gray-900">{USER_DATA.name}</h1>
-              <p className="text-sm text-gray-600 mb-2">{USER_DATA.email}</p>
-              <div className="flex items-center space-x-3">
-                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            
+            <div className="flex-1 min-w-0">
+              <h1 className="text-lg md:text-xl font-bold text-gray-900 truncate">{USER_DATA.name}</h1>
+              <p className="text-sm text-gray-600 truncate">{USER_DATA.email}</p>
+              <div className="flex items-center space-x-2 mt-1">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                   <Star className="w-3 h-3 mr-1" />
                   {USER_DATA.membershipTier}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 hidden sm:inline">
                   Member since {new Date(USER_DATA.joinDate).toLocaleDateString('en-US', { 
                     year: 'numeric', 
                     month: 'short' 
@@ -277,13 +316,14 @@ export default function ProfilePage() {
                 </span>
               </div>
             </div>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
-                <Edit3 className="w-4 h-4 mr-1" />
-                Edit
+            
+            <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2">
+              <Button variant="outline" size="sm" className="text-xs px-2 py-1">
+                <Edit3 className="w-3 h-3 sm:mr-1" />
+                <span className="hidden sm:inline">Edit</span>
               </Button>
-              <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50">
-                <LogOut className="w-4 h-4" />
+              <Button variant="outline" size="sm" className="text-red-600 border-red-300 hover:bg-red-50 text-xs px-2 py-1">
+                <LogOut className="w-3 h-3" />
               </Button>
             </div>
           </div>
@@ -291,53 +331,84 @@ export default function ProfilePage() {
       </Card>
 
       {/* Quick Stats */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card hover>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <Card hover className="transition-all duration-200 hover:shadow-md">
           <CardContent className="p-3 text-center">
-            <Package className="w-6 h-6 text-brand mx-auto mb-1" />
-            <div className="text-xl font-bold text-gray-900">{USER_DATA.totalOrders}</div>
+            <div className="w-8 h-8 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-2">
+              <Package className="w-4 h-4 text-brand" />
+            </div>
+            <div className="text-lg md:text-xl font-bold text-gray-900">{USER_DATA.totalOrders}</div>
             <div className="text-xs text-gray-500">Orders</div>
           </CardContent>
         </Card>
         
-        <Card hover>
+        <Card hover className="transition-all duration-200 hover:shadow-md">
           <CardContent className="p-3 text-center">
-            <Gift className="w-6 h-6 text-purple-600 mx-auto mb-1" />
-            <div className="text-xl font-bold text-gray-900">{USER_DATA.loyaltyPoints}</div>
+            <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <Gift className="w-4 h-4 text-purple-600" />
+            </div>
+            <div className="text-lg md:text-xl font-bold text-gray-900">{USER_DATA.loyaltyPoints}</div>
             <div className="text-xs text-gray-500">Points</div>
+          </CardContent>
+        </Card>
+        
+        <Card hover className="transition-all duration-200 hover:shadow-md">
+          <CardContent className="p-3 text-center">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <CreditCard className="w-4 h-4 text-green-600" />
+            </div>
+            <div className="text-lg md:text-xl font-bold text-gray-900">{formatINR(USER_DATA.totalSpent)}</div>
+            <div className="text-xs text-gray-500">Spent</div>
+          </CardContent>
+        </Card>
+        
+        <Card hover className="transition-all duration-200 hover:shadow-md">
+          <CardContent className="p-3 text-center">
+            <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-2">
+              <Heart className="w-4 h-4 text-red-500" />
+            </div>
+            <div className="text-lg md:text-xl font-bold text-gray-900">{USER_DATA.wishlist.length}</div>
+            <div className="text-xs text-gray-500">Wishlist</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Recent Orders */}
       <Card>
-        <CardHeader>
+        <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Orders</h2>
+            <h2 className="text-base md:text-lg font-semibold text-gray-900">Recent Orders</h2>
             <Button 
               variant="ghost" 
               size="sm"
               onClick={() => setActiveTab("orders")}
+              className="text-xs px-2 py-1"
             >
               View All
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <ChevronRight className="w-3 h-3 ml-1" />
             </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
-          <div className="space-y-3">
+          <div className="space-y-2">
             {USER_DATA.orders.slice(0, 3).map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                <div className="flex items-center space-x-3">
-                  <Package className="w-5 h-5 text-gray-400" />
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">{order.id}</p>
+              <div 
+                key={order.id} 
+                onClick={() => setActiveTab("orders")}
+                className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors cursor-pointer active:scale-[0.98]"
+              >
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  <div className="w-7 h-7 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                    <Package className="w-3.5 h-3.5 text-gray-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 text-sm truncate">{order.id}</p>
                     <p className="text-xs text-gray-500">{order.items} items • {formatINR(order.total)}</p>
                   </div>
                 </div>
-                <div className="text-right">
+                <div className="text-right flex-shrink-0">
                   <span className={cn(
-                    "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
+                    "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
                     STATUS_COLORS[order.status as keyof typeof STATUS_COLORS]
                   )}>
                     {order.status}
@@ -353,89 +424,138 @@ export default function ProfilePage() {
   );
 
   const renderOrders = () => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Order History</h2>
+          <h2 className="text-base md:text-lg font-semibold text-gray-900">Order History</h2>
           <p className="text-sm text-gray-600">Track and manage all your orders</p>
         </div>
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="self-start sm:self-auto">
           <Download className="w-4 h-4 mr-1" />
           Export
         </Button>
       </div>
       
-      {USER_DATA.orders.map((order) => (
-        <Card key={order.id} hover>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center space-x-3">
-                <Package className="w-5 h-5 text-gray-400" />
-                <div>
-                  <h3 className="font-semibold text-gray-900">{order.id}</h3>
-                  <p className="text-xs text-gray-500">
-                    {new Date(order.date).toLocaleDateString()}
-                  </p>
+      {USER_DATA.orders.map((order) => {
+        const isExpanded = expandedOrders.has(order.id);
+        return (
+          <Card key={order.id} className="transition-all duration-200 hover:shadow-md">
+            <CardContent className="p-3">
+              {/* Compact Order Header */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3 flex-1 min-w-0">
+                  <div className="w-7 h-7 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <Package className="w-3.5 h-3.5 text-gray-400" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 text-sm truncate">{order.id}</h3>
+                    <p className="text-xs text-gray-500">
+                      {order.items} items • {formatINR(order.total)} • {new Date(order.date).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-                <span className={cn(
-                  "inline-flex items-center px-2 py-1 rounded-full text-xs font-medium",
-                  STATUS_COLORS[order.status as keyof typeof STATUS_COLORS]
-                )}>
-                  {order.status}
-                </span>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-gray-900">{formatINR(order.total)}</p>
-                <p className="text-xs text-gray-500">{order.items} items</p>
-              </div>
-            </div>
-            
-            <div className="space-y-2 mb-3">
-              {order.products.map((product, index) => (
-                <div key={index} className="flex justify-between text-sm">
-                  <span className="text-gray-600">
-                    {product.name} × {product.quantity}
+                <div className="flex items-center space-x-2 flex-shrink-0">
+                  <span className={cn(
+                    "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium",
+                    STATUS_COLORS[order.status as keyof typeof STATUS_COLORS]
+                  )}>
+                    {order.status}
                   </span>
-                  <span className="font-medium">{formatINR(product.price * product.quantity)}</span>
                 </div>
-              ))}
-            </div>
-            
-            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-              <div className="flex items-center space-x-2">
-                {order.trackingNumber && (
-                  <div className="flex items-center space-x-1 text-xs text-gray-600 bg-gray-50 px-2 py-1 rounded">
-                    <Truck className="w-3 h-3" />
-                    <span>{order.trackingNumber}</span>
-                  </div>
-                )}
-                {order.deliveryDate && (
-                  <div className="flex items-center space-x-1 text-xs text-green-600 bg-green-50 px-2 py-1 rounded">
-                    <CheckCircle className="w-3 h-3" />
-                    <span>Delivered</span>
-                  </div>
-                )}
-                {order.estimatedDelivery && (
-                  <div className="flex items-center space-x-1 text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                    <Clock className="w-3 h-3" />
-                    <span>Est. {new Date(order.estimatedDelivery).toLocaleDateString()}</span>
-                  </div>
-                )}
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm">
-                  <Eye className="w-4 h-4" />
-                </Button>
-                {order.status === "Delivered" && (
-                  <Button size="sm">
-                    Reorder
+
+              {/* Show Details Button */}
+              <div className="flex items-center justify-between mt-2">
+                <button
+                  onClick={() => toggleOrderExpansion(order.id)}
+                  className="flex items-center space-x-1 text-xs text-brand hover:text-brand-dark transition-colors"
+                >
+                  <span>{isExpanded ? 'Hide Details' : 'Show Details'}</span>
+                  <ChevronRight className={cn(
+                    "w-3 h-3 transition-transform duration-200",
+                    isExpanded && "rotate-90"
+                  )} />
+                </button>
+                <div className="flex space-x-2">
+                  <Button variant="outline" size="sm" className="px-2 py-1 text-xs">
+                    <Eye className="w-3 h-3" />
                   </Button>
-                )}
+                  {order.status === "Delivered" && (
+                    <Button size="sm" className="px-2 py-1 text-xs">
+                      Reorder
+                    </Button>
+                  )}
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+
+              {/* Expandable Details */}
+              {isExpanded && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-3 pt-3 border-t border-gray-100"
+                >
+                  {/* Products List */}
+                  <div className="space-y-2 mb-4">
+                    <h4 className="text-xs font-medium text-gray-700 uppercase tracking-wide">Items Ordered</h4>
+                    {order.products.map((product, index) => (
+                      <div key={index} className="flex justify-between text-sm bg-gray-50 p-2 rounded-lg">
+                        <span className="text-gray-600">
+                          {product.name} × {product.quantity}
+                        </span>
+                        <span className="font-medium">{formatINR(product.price * product.quantity)}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Shipment Tracking */}
+                  {order.shipmentDetails && (
+                    <div className="space-y-3">
+                      <h4 className="text-xs font-medium text-gray-700 uppercase tracking-wide">Shipment Tracking</h4>
+                      <div className="space-y-3">
+                        {order.shipmentDetails.map((detail, index) => (
+                          <div key={index} className="flex items-start space-x-3">
+                            <div className="flex-shrink-0 mt-1">
+                              <div className={cn(
+                                "w-2 h-2 rounded-full",
+                                index === order.shipmentDetails!.length - 1 ? "bg-brand" : "bg-gray-300"
+                              )} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-medium text-gray-900">{detail.status}</p>
+                                <div className="text-xs text-gray-500">
+                                  {detail.date} • {detail.time}
+                                </div>
+                              </div>
+                              <p className="text-xs text-gray-600 mt-1">{detail.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tracking Number */}
+                  {order.trackingNumber && (
+                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Truck className="w-4 h-4 text-blue-600" />
+                        <div>
+                          <p className="text-sm font-medium text-blue-900">Tracking Number</p>
+                          <p className="text-sm text-blue-700">{order.trackingNumber}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </CardContent>
+          </Card>
+        );
+      })}
     </div>
   );
 
@@ -837,17 +957,71 @@ export default function ProfilePage() {
       <NoticeBar />
       <FloatingNav cartCount={cartCount} />
       
-      <div className="min-h-screen bg-brand-fg pt-32">
+      <div className="min-h-screen bg-brand-fg pt-20 md:pt-32">
+        {/* Mobile Header */}
+        <div className="lg:hidden bg-white border-b border-gray-200 sticky top-20 z-40">
+          <div className="px-6 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Link href="/" className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                  <ArrowLeft className="w-5 h-5 text-gray-600" />
+                </Link>
+                <div>
+                  <h1 className="text-lg font-semibold text-gray-900">My Profile</h1>
+                  <p className="text-xs text-gray-500">{USER_DATA.membershipTier} Member</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors lg:hidden"
+              >
+                {isMobileMenuOpen ? (
+                  <X className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <Menu className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+            </div>
+            
+            {/* Mobile Tab Navigation */}
+            <div className="mt-3 overflow-x-auto scrollbar-hide">
+              <div className="flex space-x-1 pb-2">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={cn(
+                        "flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200",
+                        activeTab === tab.id
+                          ? "bg-brand text-white shadow-md"
+                          : "text-gray-600 hover:bg-gray-100 hover:text-brand"
+                      )}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <Container>
-          <div className="py-6">
-            <div className="flex flex-col lg:flex-row gap-6">
-              {/* Sidebar */}
-              <div className="lg:w-64 flex-shrink-0">
+          <div className="py-4 md:py-6 px-2 md:px-0">
+            <div className="flex flex-col lg:flex-row gap-4 md:gap-6">
+              {/* Desktop Sidebar */}
+              <div className="hidden lg:block lg:w-64 flex-shrink-0">
                 <Card className="sticky top-36">
                   {/* Profile Summary */}
                   <CardContent className="p-4 border-b border-gray-100">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-brand rounded-xl flex items-center justify-center">
+                      <div className="w-10 h-10 bg-gradient-to-br from-brand to-emerald-600 rounded-full flex items-center justify-center">
                         <span className="text-white font-semibold text-sm">
                           {USER_DATA.name.charAt(0)}
                         </span>
@@ -892,6 +1066,7 @@ export default function ProfilePage() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2 }}
+                  className="px-6 md:px-8 lg:px-0"
                 >
                   {renderContent()}
                 </motion.div>

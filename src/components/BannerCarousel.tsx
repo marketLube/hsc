@@ -77,14 +77,15 @@ export function BannerCarousel() {
               priority={currentSlide === 0}
               sizes="100vw"
             />
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-brand/80 via-brand/60 to-brand/40" />
+            {/* No overlay needed - images have their own backgrounds */}
           </div>
 
           {/* Content */}
           <Container className="relative h-full flex items-center justify-center px-4 sm:px-6">
             <motion.div
-              className="max-w-2xl text-white text-center"
+              className={`max-w-2xl text-center ${
+                currentSlide === 2 ? 'text-white' : 'text-gray-900'
+              }`}
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.8 }}
@@ -99,7 +100,9 @@ export function BannerCarousel() {
               </motion.h1>
               
               <motion.p
-                className="text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6 md:mb-8 text-white/90 leading-relaxed"
+                className={`text-base sm:text-lg md:text-xl lg:text-2xl mb-4 sm:mb-6 md:mb-8 leading-relaxed ${
+                  currentSlide === 2 ? 'text-white/90' : 'text-gray-700'
+                }`}
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.7, duration: 0.8 }}
@@ -115,7 +118,10 @@ export function BannerCarousel() {
               >
                 <Button
                   size="default"
-                  className="bg-white text-brand hover:bg-white/90 sm:h-16 sm:px-10 sm:py-5 sm:text-lg"
+                  className={currentSlide === 2 
+                    ? "bg-white text-brand hover:bg-white/90 sm:h-16 sm:px-10 sm:py-5 sm:text-lg shadow-lg"
+                    : "bg-brand text-white hover:bg-brand-dark sm:h-16 sm:px-10 sm:py-5 sm:text-lg shadow-lg"
+                  }
                   onClick={() => document.querySelector(HERO_SLIDES[currentSlide].cta1.href)?.scrollIntoView({ behavior: "smooth" })}
                 >
                   {HERO_SLIDES[currentSlide].cta1.text}
@@ -123,7 +129,10 @@ export function BannerCarousel() {
                 <Button
                   size="default"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-brand sm:h-16 sm:px-10 sm:py-5 sm:text-lg"
+                  className={currentSlide === 2
+                    ? "border-white text-white hover:bg-white hover:text-brand sm:h-16 sm:px-10 sm:py-5 sm:text-lg shadow-lg"
+                    : "border-brand text-brand hover:bg-brand hover:text-white sm:h-16 sm:px-10 sm:py-5 sm:text-lg shadow-lg"
+                  }
                   onClick={() => document.querySelector(HERO_SLIDES[currentSlide].cta2.href)?.scrollIntoView({ behavior: "smooth" })}
                 >
                   {HERO_SLIDES[currentSlide].cta2.text}

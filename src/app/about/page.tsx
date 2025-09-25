@@ -322,7 +322,7 @@ export default function AboutPage() {
       </section>
 
       {/* Our Story */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-12 md:py-16 bg-gray-50">
         <Container>
           <motion.div
             initial="initial"
@@ -330,40 +330,107 @@ export default function AboutPage() {
             viewport={{ once: true }}
             variants={staggerContainer}
           >
-            <motion.div variants={fadeInUp} className="max-w-4xl mx-auto text-center">
-              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-ink mb-6">
-                Our Story
-                <span className="text-brand block mt-1 text-xl md:text-2xl lg:text-3xl">From Vision to Reality</span>
-              </h2>
+            <motion.div variants={fadeInUp} className="max-w-4xl mx-auto">
+              {/* Mobile-optimized title */}
+              <div className="text-center mb-8 md:mb-12">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-ink mb-3 md:mb-4 leading-tight">
+                  Our Story
+                </h2>
+                <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-brand font-semibold">
+                  From Vision to Reality
+                </p>
+              </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                <div className="space-y-4 text-gray-600 leading-relaxed">
-                  <p className="text-base">
-                    <strong className="text-ink">The Beginning:</strong> In 2018, health enthusiasts and nutrition experts 
-                    united with a shared vision - combating the health crisis from refined sugar consumption. 
-                    We saw families struggling to make healthy choices without sacrificing sweetness.
-                  </p>
-                  
-                  <p className="text-base">
-                    <strong className="text-ink">The Challenge:</strong> Markets were flooded with artificial sweeteners that 
-                    compromised taste or brought health concerns. Natural alternatives were expensive, 
-                    hard to find, or didn't satisfy like traditional sugar.
-                  </p>
-                </div>
-                
-                <div className="space-y-4 text-gray-600 leading-relaxed">
-                  <p className="text-base">
-                    <strong className="text-ink">Our Solution:</strong> We perfected stevia-based sweeteners 
-                    delivering exceptional taste, proven health benefits, and accessible pricing. After months of research, 
-                    we launched our first product - the response was overwhelming.
-                  </p>
-                  
-                  <p className="text-base">
-                    <strong className="text-ink">Today:</strong> We serve 50,000+ customers across 15+ countries, 
-                    helping families make healthier choices daily. Our journey continues as we innovate and expand 
-                    to meet evolving health-conscious consumer needs worldwide.
-                  </p>
-                </div>
+              {/* Mobile-first story content */}
+              <div className="space-y-6 md:space-y-8">
+                {/* The Beginning */}
+                <motion.div 
+                  variants={fadeInUp}
+                  className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100"
+                >
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-brand/10 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Lightbulb className="w-5 h-5 md:w-6 md:h-6 text-brand" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-xl font-bold text-ink mb-2">The Beginning</h3>
+                      <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                        In 2018, health enthusiasts and nutrition experts united with a shared vision - combating the 
+                        health crisis from refined sugar consumption. We saw families struggling to make healthy choices 
+                        without sacrificing sweetness.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* The Challenge */}
+                <motion.div 
+                  variants={fadeInUp}
+                  className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100"
+                >
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-red-50 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Target className="w-5 h-5 md:w-6 md:h-6 text-red-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-xl font-bold text-ink mb-2">The Challenge</h3>
+                      <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                        Markets were flooded with artificial sweeteners that compromised taste or brought health concerns. 
+                        Natural alternatives were expensive, hard to find, or didn't satisfy like traditional sugar.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Our Solution */}
+                <motion.div 
+                  variants={fadeInUp}
+                  className="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100"
+                >
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-green-50 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-xl font-bold text-ink mb-2">Our Solution</h3>
+                      <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+                        We perfected stevia-based sweeteners delivering exceptional taste, proven health benefits, and 
+                        accessible pricing. After months of research, we launched our first product - the response was overwhelming.
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Today */}
+                <motion.div 
+                  variants={fadeInUp}
+                  className="bg-gradient-to-br from-brand/5 to-brand/10 rounded-2xl p-6 md:p-8 border border-brand/20"
+                >
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div className="w-10 h-10 md:w-12 md:h-12 bg-brand/20 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-brand" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-xl font-bold text-ink mb-2">Today</h3>
+                      <p className="text-sm md:text-base text-gray-600 leading-relaxed mb-4">
+                        We serve 50,000+ customers across 15+ countries, helping families make healthier choices daily. 
+                        Our journey continues as we innovate and expand to meet evolving health-conscious consumer needs worldwide.
+                      </p>
+                      
+                      {/* Key achievements */}
+                      <div className="grid grid-cols-2 gap-3 mt-4">
+                        <div className="text-center p-3 bg-white/60 rounded-xl">
+                          <div className="text-xl md:text-2xl font-bold text-brand">50,000+</div>
+                          <div className="text-xs md:text-sm text-gray-600 font-medium">Happy Customers</div>
+                        </div>
+                        <div className="text-center p-3 bg-white/60 rounded-xl">
+                          <div className="text-xl md:text-2xl font-bold text-brand">15+</div>
+                          <div className="text-xs md:text-sm text-gray-600 font-medium">Countries Served</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               </div>
             </motion.div>
           </motion.div>

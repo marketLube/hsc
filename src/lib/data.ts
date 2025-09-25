@@ -5,7 +5,7 @@ export const HERO_SLIDES: BannerSlide[] = [
     id: "slide-1",
     title: "Sweetness without the sacrifice.",
     subtitle: "Sugar-like taste, stevia-powered. Starts at ₹299.",
-    image: "/images/hero-1.svg",
+    image: "/images/hero-1.png?v=2",
     cta1: { text: "Shop Bestsellers", href: "#products" },
     cta2: { text: "See All Formats", href: "#products" }
   },
@@ -13,7 +13,7 @@ export const HERO_SLIDES: BannerSlide[] = [
     id: "slide-2", 
     title: "For your healthy-lifestyle goals.",
     subtitle: "Make better choices daily—tablets, syrup, powder, sachets.",
-    image: "/images/hero-2.svg",
+    image: "/images/hero-2.png?v=2",
     cta1: { text: "Build Your Kit", href: "#products" },
     cta2: { text: "Why Stevia", href: "#science" }
   },
@@ -21,7 +21,7 @@ export const HERO_SLIDES: BannerSlide[] = [
     id: "slide-3",
     title: "Taste you love, balance you want.",
     subtitle: "Plant-based sweetness that fits tea, coffee, and baking.",
-    image: "/images/hero-3.svg",
+    image: "/images/hero-3.png?v=2",
     cta1: { text: "Shop Now", href: "#products" },
     cta2: { text: "Learn the Science", href: "#science" }
   }
