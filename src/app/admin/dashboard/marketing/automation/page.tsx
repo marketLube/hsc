@@ -8,7 +8,7 @@ import {
   Eye,
   Play,
   Pause,
-  Stop,
+  Square,
   Copy,
   Trash2,
   Search,
