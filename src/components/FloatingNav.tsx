@@ -207,7 +207,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
         <motion.nav
           className={cn(
             "bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200/50 shadow-premium transition-all duration-300 mobile-nav-container",
-            isScrolled ? "py-2 px-4" : "py-3 px-6"
+            isScrolled ? "py-1.5 px-4" : "py-2.5 px-6"
           )}
           layout
         >
@@ -222,8 +222,8 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                 <img 
                   src="/images/Healthy Sugar company HSC logo-18.svg"
                   alt="The Healthy Sugar Company logo"
-                  className="h-8 w-auto sm:h-10"
-                  style={{ maxWidth: '200px' }}
+                  className="h-6 w-auto sm:h-8"
+                  style={{ maxWidth: '120px' }}
                   data-testid="hsc-svg-logo"
                 />
               </Link>
