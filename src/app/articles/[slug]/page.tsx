@@ -91,12 +91,8 @@ export async function generateMetadata({ params }: ArticlePageProps): Promise<Me
 }
 
 // Generate static params for all articles
-export async function generateStaticParams() {
-  const articles = getAllArticles();
-  return articles.map((article) => ({
-    slug: article.slug,
-  }));
-}
+// Disable static generation to avoid SSR issues with client-only components
+export const dynamic = 'force-dynamic';
 
 export default function ArticlePage({ params }: ArticlePageProps) {
   const article = getArticleBySlug(params.slug);
