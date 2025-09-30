@@ -35,6 +35,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
   const [isImageAutoRotating, setIsImageAutoRotating] = useState(true);
+  const [imageProgress, setImageProgress] = useState(0);
   const { showToast, ToastContainer } = useToast();
 
   // Unwrap the params Promise using React.use()
@@ -122,6 +123,37 @@ export default function ProductPage({ params }: ProductPageProps) {
     setIsAutoScrolling(false);
     // Resume auto-scrolling after 10 seconds of inactivity
     setTimeout(() => setIsAutoScrolling(true), 10000);
+  };
+
+  // Auto-rotating image gallery functionality
+  useEffect(() => {
+    if (!isImageAutoRotating || !product?.images || product.images.length <= 1) return;
+
+    const duration = 3500; // 3.5 seconds
+    const intervalTime = 50; // Update progress every 50ms
+
+    const progressInterval = setInterval(() => {
+      setImageProgress(prev => {
+        const newProgress = prev + (100 / (duration / intervalTime));
+        if (newProgress >= 100) {
+          // Move to next image
+          setSelectedImageIndex(prevIndex => (prevIndex + 1) % product.images!.length);
+          return 0;
+        }
+        return newProgress;
+      });
+    }, intervalTime);
+
+    return () => clearInterval(progressInterval);
+  }, [isImageAutoRotating, product?.images, selectedImageIndex]);
+
+  // Handle manual image selection (stops auto-rotation temporarily)
+  const handleImageSelect = (index: number) => {
+    setSelectedImageIndex(index);
+    setImageProgress(0);
+    setIsImageAutoRotating(false);
+    // Resume auto-rotation after 10 seconds of inactivity
+    setTimeout(() => setIsImageAutoRotating(true), 10000);
   };
 
   if (!product) {
@@ -407,35 +439,36 @@ export default function ProductPage({ params }: ProductPageProps) {
             transition={{ duration: 0.6 }}
             className="space-y-6"
           >
-            <Card className="overflow-hidden">
-              <div className="relative h-80 lg:h-96">
-                <Image
-                  src={product.images && product.images.length > 0 ? product.images[selectedImageIndex].src : product.image.src}
-                  alt={product.images && product.images.length > 0 ? product.images[selectedImageIndex].alt : product.image.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
-                {product.badge && (
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 text-sm font-semibold rounded-full bg-brand text-white">
-                      {product.badge}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </Card>
+            <div className="w-full flex flex-col items-center space-y-6">
+              <Card className="overflow-hidden group cursor-pointer w-full">
+                <div className="relative h-80 lg:h-96 overflow-hidden">
+                  <Image
+                    src={product.images && product.images.length > 0 ? product.images[selectedImageIndex].src : product.image.src}
+                    alt={product.images && product.images.length > 0 ? product.images[selectedImageIndex].alt : product.image.alt}
+                    fill
+                    className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                  {product.badge && (
+                    <div className="absolute top-4 left-4 z-10">
+                      <span className="px-3 py-1 text-sm font-semibold rounded-full bg-brand text-white">
+                        {product.badge}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </Card>
 
-            {/* Thumbnail Gallery */}
-            {product.images && product.images.length > 0 && (
-              <div className="flex justify-center">
-                <div className="grid grid-cols-5 gap-4 max-w-sm">
+              {/* Thumbnail Gallery */}
+              {product.images && product.images.length > 0 && (
+                <div className="flex justify-center items-center w-full">
+                  <div className="grid grid-cols-5 gap-3 sm:gap-4 max-w-md mx-auto">
                   {product.images.map((img, index) => (
                     <button
                       key={index}
-                      onClick={() => setSelectedImageIndex(index)}
+                      onClick={() => handleImageSelect(index)}
                       className={cn(
-                        "relative w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200",
+                        "relative w-14 h-14 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-lg overflow-hidden border-2 transition-all duration-200",
                         selectedImageIndex === index
                           ? "border-brand ring-2 ring-brand/20"
                           : "border-gray-200 hover:border-gray-300"
@@ -457,8 +490,8 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             )}
 
-            {/* Trust Badges below thumbnails */}
-            <div className="grid grid-cols-3 gap-4">
+              {/* Trust Badges below thumbnails */}
+              <div className="grid grid-cols-3 gap-4 w-full">
               <div className="text-center">
                 <Truck className="h-6 w-6 text-brand mx-auto mb-2" />
                 <p className="text-sm font-medium">Free Shipping</p>
@@ -474,6 +507,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <p className="text-sm font-medium">Diabetes Care</p>
                 <p className="text-xs text-gray-600">Blood Sugar Safe</p>
               </div>
+            </div>
             </div>
           </motion.div>
 

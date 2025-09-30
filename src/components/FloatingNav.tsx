@@ -212,26 +212,20 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
           layout
         >
           <div className="flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center">
+            {/* Company Logo */}
+            <div className="flex items-center" key="logo-container">
               <Link 
                 href="/" 
-                className="flex items-center space-x-2"
+                className="flex items-center"
                 aria-label="The Healthy Sugar Company - Home"
               >
-                <div 
-                  className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center"
-                  role="img"
-                  aria-label="The Healthy Sugar Company logo"
-                >
-                  <span className="text-white font-bold text-sm" aria-hidden="true">H</span>
-                </div>
-                <span className="font-bold text-lg text-brand hidden sm:block">
-                  The Healthy Sugar Company
-                </span>
-                <span className="font-bold text-lg text-brand sm:hidden">
-                  HSC
-                </span>
+                <img 
+                  src="/images/Healthy Sugar company HSC logo-18.svg"
+                  alt="The Healthy Sugar Company logo"
+                  className="h-8 w-auto sm:h-10"
+                  style={{ maxWidth: '200px' }}
+                  data-testid="hsc-svg-logo"
+                />
               </Link>
             </div>
 
@@ -408,11 +402,11 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                 <div className="py-4">
                   {navItems.map((item, index) => {
                     const isActive = activeSection === item.sectionId || 
-                      (typeof window !== 'undefined' && window.location.pathname === "/about" && item.sectionId === "about") ||
-                      (typeof window !== 'undefined' && window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
-                      (typeof window !== 'undefined' && window.location.pathname === "/science" && item.sectionId === "science") ||
-                      (typeof window !== 'undefined' && window.location.pathname.startsWith("/blogs") && item.sectionId === "blogs") ||
-                      (typeof window !== 'undefined' && window.location.pathname === "/contact" && item.sectionId === "contact");
+                      (currentPath === "/about" && item.sectionId === "about") ||
+                      (currentPath === "/benefits" && item.sectionId === "benefits") ||
+                      (currentPath === "/science" && item.sectionId === "science") ||
+                      (currentPath.startsWith("/blogs") && item.sectionId === "blogs") ||
+                      (currentPath === "/contact" && item.sectionId === "contact");
                     
                     return (
                       <motion.div
