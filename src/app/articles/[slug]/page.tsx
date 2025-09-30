@@ -10,8 +10,7 @@ import { FloatingNav } from "@/components/FloatingNav";
 import { Footer } from "@/components/Footer";
 import { getArticleBySlug, getAllArticles, type Article } from "@/lib/articles";
 import { notFound } from "next/navigation";
-import dynamic from "next/dynamic";
-const ArticleClient = dynamic(() => import("./ArticleClient"), { ssr: false });
+import ArticleClient from "./ArticleClient";
 
 
 interface ArticlePageProps {
