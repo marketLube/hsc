@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 
 export default function robots(): MetadataRoute.Robots {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thehealthysugarcompany.com'
   return {
     rules: {
       userAgent: '*',
@@ -13,6 +14,6 @@ export default function robots(): MetadataRoute.Robots {
         '/temp/',
       ],
     },
-    sitemap: 'https://healthysugar.com/sitemap.xml',
+    sitemap: `${baseUrl}/sitemap.xml`,
   }
 }

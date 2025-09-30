@@ -14,6 +14,7 @@ interface SchemaMarkupProps {
 }
 
 export function AdvancedSchemaMarkup({ type, data }: SchemaMarkupProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thehealthysugarcompany.com'
   const getSchemaForType = () => {
     switch (type) {
       case 'homepage':
@@ -47,17 +48,18 @@ export function AdvancedSchemaMarkup({ type, data }: SchemaMarkupProps) {
 
 // Homepage Schema - Organization + Website + Local Business
 function getHomepageSchema() {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thehealthysugarcompany.com'
   return {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://healthysugar.com/#organization",
+        "@id": `${baseUrl}/#organization`,
         "name": "The Healthy Sugar Company",
-        "url": "https://healthysugar.com",
+        "url": baseUrl,
         "logo": {
           "@type": "ImageObject",
-          "url": "https://healthysugar.com/brand/logo.svg",
+          "url": `${baseUrl}/brand/logo.svg`,
           "width": 200,
           "height": 60
         },
@@ -98,19 +100,19 @@ function getHomepageSchema() {
       },
       {
         "@type": "WebSite",
-        "@id": "https://healthysugar.com/#website",
-        "url": "https://healthysugar.com",
+        "@id": `${baseUrl}/#website`,
+        "url": baseUrl,
         "name": "The Healthy Sugar Company",
         "description": "Premium stevia sweeteners - natural sugar alternatives",
         "publisher": {
-          "@id": "https://healthysugar.com/#organization"
+          "@id": `${baseUrl}/#organization`
         },
         "potentialAction": [
           {
             "@type": "SearchAction",
             "target": {
               "@type": "EntryPoint",
-              "urlTemplate": "https://healthysugar.com/search?q={search_term_string}"
+              "urlTemplate": `${baseUrl}/search?q={search_term_string}`
             },
             "query-input": "required name=search_term_string"
           }
@@ -118,9 +120,9 @@ function getHomepageSchema() {
       },
       {
         "@type": "LocalBusiness",
-        "@id": "https://healthysugar.com/#localbusiness",
+        "@id": `${baseUrl}/#localbusiness`,
         "name": "The Healthy Sugar Company",
-        "image": "https://healthysugar.com/brand/logo.svg",
+        "image": `${baseUrl}/brand/logo.svg`,
         "telephone": "+91-98765-43210",
         "email": "hello@healthysugar.com",
         "address": {
@@ -134,7 +136,7 @@ function getHomepageSchema() {
           "latitude": 19.0760,
           "longitude": 72.8777
         },
-        "url": "https://healthysugar.com",
+        "url": baseUrl,
         "priceRange": "₹299-₹999",
         "openingHours": "Mo-Sa 09:00-18:00",
         "paymentAccepted": "Cash, Credit Card, Debit Card, UPI, Net Banking",

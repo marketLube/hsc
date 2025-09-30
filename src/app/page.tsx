@@ -126,8 +126,8 @@ export default function Home() {
             "@context": "https://schema.org",
             "@type": "Organization",
             "name": "The Healthy Sugar Company",
-            "url": "https://healthysugar.com",
-            "logo": "https://healthysugar.com/brand/logo.svg",
+            "url": (process.env.NEXT_PUBLIC_SITE_URL || 'https://thehealthysugarcompany.com'),
+            "logo": `${process.env.NEXT_PUBLIC_SITE_URL || 'https://thehealthysugarcompany.com'}/brand/logo.svg`,
             "description": "Stevia-based sweeteners in tablets, syrup, powder, and sachets. Sugar-like taste, diabetes-friendly choice, affordable from ₹299.",
             "address": {
               "@type": "PostalAddress",

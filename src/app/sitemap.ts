@@ -3,7 +3,7 @@ import { getAllArticles } from '@/lib/articles'
 import { PRODUCTS } from '@/lib/products'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://healthysugar.com'
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://thehealthysugarcompany.com'
   
   // Get all articles for dynamic routes
   const articles = getAllArticles()
