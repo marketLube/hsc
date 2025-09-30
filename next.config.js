@@ -134,6 +134,15 @@ const nextConfig = {
   // Redirects for SEO
   async redirects() {
     return [
+      // Canonical host: redirect www to apex
+      {
+        source: '/:path*',
+        has: [
+          { type: 'host', value: 'www.thehealthysugarcompany.com' },
+        ],
+        destination: 'https://thehealthysugarcompany.com/:path*',
+        permanent: true,
+      },
       {
         source: '/home',
         destination: '/',

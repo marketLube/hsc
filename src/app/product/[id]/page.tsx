@@ -34,6 +34,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [copyTimeout, setCopyTimeout] = useState<NodeJS.Timeout | null>(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<string | null>(null);
+  const [isImageAutoRotating, setIsImageAutoRotating] = useState(true);
   const { showToast, ToastContainer } = useToast();
 
   // Unwrap the params Promise using React.use()

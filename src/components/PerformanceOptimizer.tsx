@@ -37,11 +37,7 @@ export function PerformanceOptimizer() {
     // Preload critical resources
     const preloadCriticalResources = () => {
       // Preload critical fonts
-      const fontLinks = [
-        { href: '/fonts/poppins-400.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
-        { href: '/fonts/poppins-600.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
-        { href: '/fonts/poppins-700.woff2', as: 'font', type: 'font/woff2', crossorigin: 'anonymous' },
-      ];
+      const fontLinks: Array<{href: string; as: string; type: string; crossorigin?: string}> = [];
 
       fontLinks.forEach(font => {
         const link = document.createElement('link');

@@ -174,7 +174,7 @@ const USER_DATA = {
       name: "Premium Stevia Combo Pack",
       price: 1299,
       originalPrice: 1599,
-      image: "/images/products/combo.svg",
+      image: "/images/products/sachets.svg",
       inStock: true
     },
     {
@@ -182,7 +182,7 @@ const USER_DATA = {
       name: "Organic Stevia Powder 500g", 
       price: 699,
       originalPrice: 799,
-      image: "/images/products/organic-powder.svg",
+      image: "/images/products/powder.svg",
       inStock: false
     }
   ]

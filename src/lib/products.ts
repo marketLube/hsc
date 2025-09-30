@@ -136,15 +136,15 @@ export const PRODUCTS: Product[] = [
     reviewCount: 156,
     blurb: "Measure & mix for baking.", 
     image: { 
-      src: "/images/products/powder.svg", 
+      src: "/images/products/powder-1.jpg", 
       alt: "Healthy Sugar powder pack, 100 g" 
     },
     images: [
-      { src: "/images/products/powder.svg", alt: "Healthy Sugar powder pack front" },
-      { src: "/images/products/powder.svg", alt: "Healthy Sugar powder pack back" },
-      { src: "/images/products/powder.svg", alt: "Healthy Sugar powder in baking" },
-      { src: "/images/products/powder.svg", alt: "Healthy Sugar powder texture" },
-      { src: "/images/products/powder.svg", alt: "Healthy Sugar powder lifestyle" }
+      { src: "/images/products/powder-1.jpg", alt: "Healthy Sugar powder pack front view" },
+      { src: "/images/products/powder-2.jpg", alt: "Healthy Sugar powder pack side view" },
+      { src: "/images/products/powder-3.jpg", alt: "Healthy Sugar powder pack with natural stevia" },
+      { src: "/images/products/powder-4.jpg", alt: "Healthy Sugar powder in kitchen setting" },
+      { src: "/images/products/powder-5.jpg", alt: "Healthy Sugar powder with desserts" }
     ],
     brand: "The Healthy Sugar Company",
     coupons: [
