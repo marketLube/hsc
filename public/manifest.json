@@ -1,0 +1,123 @@
+{
+  "name": "The Healthy Sugar Company - Premium Stevia Sweeteners",
+  "short_name": "Healthy Sugar Co",
+  "description": "India's leading stevia sweetener brand. Natural, zero-calorie sugar alternatives for healthy living.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F7F6",
+  "theme_color": "#e7404a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en-IN",
+  "dir": "ltr",
+  "categories": ["health", "food", "shopping", "lifestyle"],
+  "screenshots": [
+    {
+      "src": "/images/screenshots/mobile-home.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Homepage on mobile"
+    },
+    {
+      "src": "/images/screenshots/desktop-home.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Homepage on desktop"
+    }
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Shop Products",
+      "short_name": "Shop",
+      "description": "Browse our stevia product range",
+      "url": "/#products",
+      "icons": [{ "src": "/icons/shortcut-shop.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Health Benefits",
+      "short_name": "Benefits",
+      "description": "Learn about stevia health benefits",
+      "url": "/benefits",
+      "icons": [{ "src": "/icons/shortcut-health.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Compare Sweeteners",
+      "short_name": "Compare",
+      "description": "Compare stevia with other sweeteners",
+      "url": "/compare",
+      "icons": [{ "src": "/icons/shortcut-compare.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "FAQ",
+      "short_name": "FAQ",
+      "description": "Get answers to common questions",
+      "url": "/faq",
+      "icons": [{ "src": "/icons/shortcut-faq.png", "sizes": "96x96" }]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://healthysugar.com/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  }
+}

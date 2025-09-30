@@ -30,17 +30,18 @@ export function BannerGrid() {
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 sm:gap-6 auto-rows-fr items-stretch">
           {BANNER_TILES.map((tile, index) => (
             <motion.div
               key={tile.id}
+              className="h-full flex"
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.6 }}
             >
-              <Card hover className="h-full overflow-hidden group cursor-pointer">
-                <div className="relative h-40 sm:h-48 overflow-hidden">
+              <Card hover className="h-full w-full min-h-[280px] overflow-hidden group cursor-pointer flex-1">
+                <div className="relative h-40 sm:h-48 lg:h-52 overflow-hidden">
                   <Image
                     src={tile.image}
                     alt={tile.title}

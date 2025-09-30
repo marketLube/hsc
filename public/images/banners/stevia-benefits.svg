@@ -1,4 +1,56 @@
 <svg width="600" height="400" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="600" height="400" fill="#e5f3f4"/>
-  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="500" fill="#e7404a">Stevia benefits</text>
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="stevia-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#dcfce7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#bbf7d0;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="stevia-accent" cx="80%" cy="20%" r="50%">
+      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.15" />
+      <stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Main Background -->
+  <rect width="600" height="400" fill="url(#stevia-bg)"/>
+  <rect width="600" height="400" fill="url(#stevia-accent)"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="520" cy="80" r="35" fill="#22c55e" opacity="0.1"/>
+  <circle cx="480" cy="120" r="22" fill="#22c55e" opacity="0.15"/>
+  <circle cx="550" cy="140" r="12" fill="#22c55e" opacity="0.2"/>
+  
+  <!-- Large Stevia Leaf -->
+  <g transform="translate(420, 200)">
+    <ellipse cx="0" cy="0" rx="35" ry="20" fill="#22c55e" opacity="0.6"/>
+    <path d="M-25 0 Q0 -15 25 0 Q0 15 -25 0" fill="#16a34a" opacity="0.7"/>
+    <path d="M-15 -5 Q0 -8 15 -5" stroke="#15803d" stroke-width="1" fill="none" opacity="0.8"/>
+    <path d="M-15 0 Q0 -3 15 0" stroke="#15803d" stroke-width="1" fill="none" opacity="0.8"/>
+    <path d="M-15 5 Q0 2 15 5" stroke="#15803d" stroke-width="1" fill="none" opacity="0.8"/>
+  </g>
+  
+  <!-- Small Leaves -->
+  <g transform="translate(480, 280)">
+    <ellipse cx="0" cy="0" rx="15" ry="8" fill="#4ade80" opacity="0.5"/>
+    <path d="M-10 0 Q0 -5 10 0 Q0 5 -10 0" fill="#22c55e" opacity="0.6"/>
+  </g>
+  
+  <g transform="translate(460, 320)">
+    <ellipse cx="0" cy="0" rx="12" ry="6" fill="#4ade80" opacity="0.4"/>
+    <path d="M-8 0 Q0 -4 8 0 Q0 4 -8 0" fill="#22c55e" opacity="0.5"/>
+  </g>
+  
+  <!-- Natural Badge -->
+  <g transform="translate(450, 120)">
+    <rect x="0" y="0" width="50" height="20" rx="10" fill="#22c55e" opacity="0.7"/>
+    <text x="25" y="14" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#ffffff">NATURAL</text>
+  </g>
+  
+  <!-- Main Content -->
+  <text x="50" y="180" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2937">Stevia</text>
+  <text x="50" y="220" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#22c55e">benefits</text>
+  <text x="50" y="260" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#4b5563">From the leaf, not the lab.</text>
+  
+  <!-- Top Accent -->
+  <rect x="0" y="0" width="600" height="20" fill="#22c55e" opacity="0.1"/>
 </svg>

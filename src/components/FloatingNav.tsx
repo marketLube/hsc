@@ -86,6 +86,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
       "benefits", 
       "products",
       "science",
+      "blogs",
       "testimonials",
       "contact"
     ];
@@ -150,6 +151,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
     { name: "About", href: "/about", sectionId: "about" },
     { name: "Benefits", href: "/benefits", sectionId: "benefits" },
     { name: "Science", href: "/science", sectionId: "science" },
+    { name: "Blog", href: "/blogs", sectionId: "blogs" },
     { name: "Reviews", href: "/#testimonials", sectionId: "testimonials" },
     { name: "Contact", href: "/contact", sectionId: "contact" },
   ];
@@ -159,8 +161,8 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
     // Close mobile menu if open
     setIsMobileMenuOpen(false);
     
-    // For dedicated pages (about, benefits, science, contact), let the Link handle navigation
-    if (sectionId === "about" || sectionId === "benefits" || sectionId === "science" || sectionId === "contact") {
+    // For dedicated pages (about, benefits, science, blogs, contact), let the Link handle navigation
+    if (sectionId === "about" || sectionId === "benefits" || sectionId === "science" || sectionId === "blogs" || sectionId === "contact") {
       return; // Let the Link component handle the navigation
     }
     
@@ -212,9 +214,17 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">H</span>
+              <Link 
+                href="/" 
+                className="flex items-center space-x-2"
+                aria-label="The Healthy Sugar Company - Home"
+              >
+                <div 
+                  className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center"
+                  role="img"
+                  aria-label="The Healthy Sugar Company logo"
+                >
+                  <span className="text-white font-bold text-sm" aria-hidden="true">H</span>
                 </div>
                 <span className="font-bold text-lg text-brand hidden sm:block">
                   The Healthy Sugar Company
@@ -226,12 +236,17 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
             </div>
 
             {/* Navigation Links */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <nav 
+              className="hidden lg:flex items-center space-x-8"
+              role="navigation"
+              aria-label="Main navigation"
+            >
               {navItems.map((item) => {
                 const isActive = activeSection === item.sectionId || 
                   (currentPath === "/about" && item.sectionId === "about") ||
                   (currentPath === "/benefits" && item.sectionId === "benefits") ||
                   (currentPath === "/science" && item.sectionId === "science") ||
+                  (currentPath.startsWith("/blogs") && item.sectionId === "blogs") ||
                   (currentPath === "/contact" && item.sectionId === "contact");
                 
                 return (
@@ -245,6 +260,8 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                           ? "text-brand" 
                           : "text-gray-700"
                       )}
+                      aria-current={isActive ? "page" : undefined}
+                      aria-label={`Navigate to ${item.name} ${isActive ? '(current page)' : ''}`}
                     >
                       {item.name}
                       
@@ -261,6 +278,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                             damping: 30,
                             duration: 0.3
                           }}
+                          aria-hidden="true"
                         />
                       )}
                       
@@ -270,12 +288,13 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                         initial={{ scaleX: 0 }}
                         whileHover={{ scaleX: isActive ? 0 : 1 }}
                         transition={{ duration: 0.2 }}
+                        aria-hidden="true"
                       />
                     </Link>
                   </motion.div>
                 );
               })}
-            </div>
+            </nav>
 
             {/* Right Actions */}
             <div className="flex items-center">
@@ -290,7 +309,8 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                       ? "bg-brand/10 hover:bg-brand/20"
                       : "hover:bg-gray-100"
                   )}
-                  aria-label="Account"
+                  aria-label="User account and profile settings"
+                  title="Account"
                 >
                   <User className={cn(
                     "h-5 w-5 transition-colors",
@@ -304,7 +324,8 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                 <button
                   onClick={() => setIsCartOpen(true)}
                   className="relative p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                  aria-label={`Cart (${currentCartCount} items)`}
+                  aria-label={`Shopping cart with ${currentCartCount} ${currentCartCount === 1 ? 'item' : 'items'}`}
+                  title={`Cart (${currentCartCount})`}
                 >
                   <ShoppingCart className="h-5 w-5 text-gray-600" />
                   {currentCartCount > 0 && (
@@ -313,6 +334,8 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      aria-label={`${currentCartCount} items in cart`}
+                      role="status"
                     >
                       {currentCartCount > 99 ? "99+" : currentCartCount}
                     </motion.span>
@@ -323,7 +346,9 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                   className="lg:hidden p-2 hover:bg-gray-100 rounded-xl transition-colors"
-                  aria-label="Toggle mobile menu"
+                  aria-label={isMobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+                  aria-expanded={isMobileMenuOpen}
+                  aria-controls="mobile-navigation-menu"
                 >
                   {isMobileMenuOpen ? (
                     <X className="h-5 w-5 text-gray-600" />
@@ -374,8 +399,11 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
           >
             <Container>
               <motion.div
+                id="mobile-navigation-menu"
                 className="bg-white/95 backdrop-blur-md rounded-2xl border border-gray-200/50 shadow-premium mt-2 overflow-hidden"
                 layout
+                role="navigation"
+                aria-label="Mobile navigation menu"
               >
                 <div className="py-4">
                   {navItems.map((item, index) => {
@@ -383,6 +411,7 @@ export function FloatingNav({ cartCount = 0 }: FloatingNavProps) {
                       (typeof window !== 'undefined' && window.location.pathname === "/about" && item.sectionId === "about") ||
                       (typeof window !== 'undefined' && window.location.pathname === "/benefits" && item.sectionId === "benefits") ||
                       (typeof window !== 'undefined' && window.location.pathname === "/science" && item.sectionId === "science") ||
+                      (typeof window !== 'undefined' && window.location.pathname.startsWith("/blogs") && item.sectionId === "blogs") ||
                       (typeof window !== 'undefined' && window.location.pathname === "/contact" && item.sectionId === "contact");
                     
                     return (

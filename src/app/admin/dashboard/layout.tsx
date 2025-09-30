@@ -20,7 +20,10 @@ import {
   LogOut,
   Bell,
   Search,
-  ChevronDown
+  ChevronDown,
+  Globe,
+  Calculator,
+  Shield
 } from "lucide-react";
 
 const navigation = [
@@ -28,10 +31,13 @@ const navigation = [
   { name: "Products", href: "/admin/dashboard/products", icon: Package },
   { name: "Orders", href: "/admin/dashboard/orders", icon: ShoppingCart },
   { name: "Customers", href: "/admin/dashboard/customers", icon: Users },
+  { name: "Accounts", href: "/admin/dashboard/accounts", icon: Calculator },
+  { name: "User Management", href: "/admin/dashboard/users", icon: Shield },
   { name: "Inventory", href: "/admin/dashboard/inventory", icon: BarChart3 },
   { name: "Analytics", href: "/admin/dashboard/analytics", icon: BarChart3 },
   { name: "Marketing", href: "/admin/dashboard/marketing", icon: Gift },
   { name: "Content", href: "/admin/dashboard/content", icon: FileText },
+  { name: "Search Engine", href: "/admin/dashboard/search-engine", icon: Globe },
   { name: "Reviews", href: "/admin/dashboard/reviews", icon: Star },
   { name: "Shipping", href: "/admin/dashboard/shipping", icon: Truck },
   { name: "Returns", href: "/admin/dashboard/returns", icon: RefreshCw },

@@ -9,6 +9,7 @@ import { BannerGrid } from "@/components/BannerGrid";
 import { ProductGrid } from "@/components/ProductGrid";
 import { UseCases } from "@/components/UseCases";
 import { SteviaScience } from "@/components/SteviaScience";
+import { PopularBlogs } from "@/components/PopularBlogs";
 import { Testimonials } from "@/components/Testimonials";
 import { Newsletter } from "@/components/Newsletter";
 import { Footer } from "@/components/Footer";
@@ -67,30 +68,51 @@ export default function Home() {
       <FloatingNav cartCount={cartCount} />
       
       {/* Main Content */}
-      <main>
+      <main id="main-content" role="main" aria-label="Main content">
         {/* Hero Section */}
-        <BannerCarousel />
+        <section id="home" aria-label="Hero banner and main product introduction">
+          <BannerCarousel />
+        </section>
         
         {/* USP Strip */}
-        <USPStrip />
+        <section aria-label="Key product benefits">
+          <USPStrip />
+        </section>
         
         {/* Benefits Section */}
-        <BannerGrid />
+        <section id="benefits" aria-label="Health benefits of stevia sweeteners">
+          <BannerGrid />
+        </section>
         
         {/* Products Section */}
-        <ProductGrid />
+        <section id="products" aria-label="Our stevia product range">
+          <ProductGrid />
+        </section>
         
         {/* Use Cases Section */}
-        <UseCases />
+        <section aria-label="How to use stevia products">
+          <UseCases />
+        </section>
         
         {/* Science Section */}
-        <SteviaScience />
+        <section id="science" aria-label="Scientific evidence and research">
+          <SteviaScience />
+        </section>
+        
+        {/* Popular Blogs Section */}
+        <section id="blogs" aria-label="Popular health and wellness articles">
+          <PopularBlogs />
+        </section>
         
         {/* Testimonials Section */}
-        <Testimonials />
+        <section id="testimonials" aria-label="Customer reviews and testimonials">
+          <Testimonials />
+        </section>
         
         {/* Newsletter Section */}
-        <Newsletter />
+        <section aria-label="Newsletter signup">
+          <Newsletter />
+        </section>
       </main>
       
       {/* Footer */}

@@ -1,4 +1,42 @@
 <svg width="600" height="400" viewBox="0 0 600 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="600" height="400" fill="#e5f3f4"/>
-  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="16" font-weight="500" fill="#e7404a">Sweetness without compromise</text>
+  <!-- Background Gradient -->
+  <defs>
+    <linearGradient id="sweetness-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#e5f3f4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b8e6e8;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="sweetness-accent" cx="80%" cy="20%" r="60%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Main Background -->
+  <rect width="600" height="400" fill="url(#sweetness-bg)"/>
+  <rect width="600" height="400" fill="url(#sweetness-accent)"/>
+  
+  <!-- Decorative Elements -->
+  <circle cx="520" cy="80" r="40" fill="#ffffff" opacity="0.1"/>
+  <circle cx="480" cy="120" r="25" fill="#ffffff" opacity="0.15"/>
+  <circle cx="550" cy="150" r="15" fill="#ffffff" opacity="0.2"/>
+  
+  <!-- Sugar Crystal Icon -->
+  <g transform="translate(450, 250)">
+    <path d="M20 10 L35 25 L20 40 L5 25 Z" fill="#e7404a" opacity="0.8"/>
+    <path d="M25 15 L35 25 L25 35 L15 25 Z" fill="#ffffff" opacity="0.6"/>
+  </g>
+  
+  <!-- Leaf Accent -->
+  <g transform="translate(480, 300)">
+    <ellipse cx="0" cy="0" rx="15" ry="8" fill="#4ade80" opacity="0.6"/>
+    <path d="M-10 0 Q0 -5 10 0 Q0 5 -10 0" fill="#22c55e" opacity="0.7"/>
+  </g>
+  
+  <!-- Main Content -->
+  <text x="50" y="180" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#1f2937">Sweetness without</text>
+  <text x="50" y="220" font-family="Arial, sans-serif" font-size="28" font-weight="700" fill="#e7404a">compromise</text>
+  <text x="50" y="260" font-family="Arial, sans-serif" font-size="16" font-weight="400" fill="#4b5563">Enjoy sweetness without giving up taste.</text>
+  
+  <!-- Bottom Accent -->
+  <rect x="0" y="380" width="600" height="20" fill="#e7404a" opacity="0.1"/>
 </svg>
