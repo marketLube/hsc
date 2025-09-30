@@ -13,6 +13,8 @@ const poppins = Poppins({
   preload: true,
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://healthysugar.com";
+
 export const metadata: Metadata = {
   title: "The Healthy Sugar Company — Premium Stevia Sweeteners | Natural Sugar Alternative",
   description: "India's #1 stevia-based sweeteners in tablets, syrup, powder, and sachets. Zero calories, diabetes-friendly, plant-based sugar alternative starting from ₹299. Free shipping across India.",
@@ -36,7 +38,7 @@ export const metadata: Metadata = {
   authors: [{ name: "The Healthy Sugar Company" }],
   creator: "The Healthy Sugar Company",
   publisher: "The Healthy Sugar Company",
-  metadataBase: new URL("https://healthysugar.com"),
+  metadataBase: new URL(SITE_URL),
   alternates: {
     canonical: "/",
   },
@@ -105,7 +107,7 @@ export default function RootLayout({
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="canonical" href="https://healthysugar.com" />
+        <link rel="canonical" href={SITE_URL} />
         <link rel="dns-prefetch" href="//www.google-analytics.com" />
         <link rel="preload" href="/images/hero-1.png" as="image" />
         <link rel="preload" href="/brand/logo.svg" as="image" />
