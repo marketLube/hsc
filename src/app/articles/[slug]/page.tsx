@@ -1,6 +1,5 @@
 import React from "react";
 import { Metadata } from "next";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Clock, User, Calendar, Tag, Share2, BookOpen, Heart } from "lucide-react";
@@ -13,20 +12,6 @@ import { getArticleBySlug, getAllArticles, type Article } from "@/lib/articles";
 import { notFound } from "next/navigation";
 import ArticleClient from "./ArticleClient";
 
-// Animation variants
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
 
 interface ArticlePageProps {
   params: {
