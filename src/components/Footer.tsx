@@ -53,11 +53,12 @@ export function Footer() {
                 transition={{ duration: 0.6 }}
               >
                 {/* Brand Section */}
-                <div className="flex items-center justify-center space-x-2 mb-3">
-                  <div className="w-8 h-8 bg-brand rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">H</span>
-                  </div>
-                  <span className="font-bold text-base leading-tight">The Healthy Sugar Company</span>
+                <div className="flex items-center justify-center mb-3">
+                  <img
+                    src="/images/Healthy Sugar company HSC logo-18.svg"
+                    alt="The Healthy Sugar Company"
+                    className="h-8 w-auto"
+                  />
                 </div>
                 <p className="text-gray-300 leading-relaxed mb-6 text-sm max-w-xs mx-auto">
                   Making healthier choices accessible with premium stevia-based sweeteners.
@@ -165,11 +166,12 @@ export function Footer() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6 }}
               >
-                <div className="flex items-center justify-center md:justify-start space-x-2 mb-4 sm:mb-6">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-brand rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-sm sm:text-base">H</span>
-                  </div>
-                  <span className="font-bold text-lg sm:text-xl">The Healthy Sugar Company</span>
+                <div className="flex items-center justify-center md:justify-start mb-4 sm:mb-6">
+                  <img
+                    src="/images/Healthy Sugar company HSC logo-18.svg"
+                    alt="The Healthy Sugar Company"
+                    className="h-8 sm:h-10 w-auto"
+                  />
                 </div>
                 <p className="text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
                   Making healthier choices accessible with premium stevia-based sweeteners. 

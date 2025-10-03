@@ -826,3 +826,4 @@ export default function TaxPage() {
     </div>
   );
 }
+
