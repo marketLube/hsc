@@ -676,7 +676,7 @@ export default function AccountsPage() {
                     <div className="flex-1 bg-gray-100 rounded-full h-2">
                       <div 
                         className="bg-blue-500 h-2 rounded-full transition-all duration-500"
-                        style={{ width: `${(data.profit / 120000) * 100}%` }}
+                        style={{ width: `${Math.min((data.profit / 800000) * 100, 100)}%` }}
                       ></div>
                     </div>
                   </div>

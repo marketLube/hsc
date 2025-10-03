@@ -23,7 +23,15 @@ import {
   ChevronDown,
   Globe,
   Calculator,
-  Shield
+  Shield,
+  Zap,
+  CreditCard,
+  Building2,
+  BadgePercent,
+  Headphones,
+  ShoppingBag,
+  Workflow,
+  TrendingUp
 } from "lucide-react";
 
 const navigation = [
@@ -31,16 +39,25 @@ const navigation = [
   { name: "Products", href: "/admin/dashboard/products", icon: Package },
   { name: "Orders", href: "/admin/dashboard/orders", icon: ShoppingCart },
   { name: "Customers", href: "/admin/dashboard/customers", icon: Users },
+  { name: "Suppliers", href: "/admin/dashboard/suppliers", icon: Building2 },
+  { name: "Promotions", href: "/admin/dashboard/promotions", icon: BadgePercent },
+  { name: "Helpdesk", href: "/admin/dashboard/helpdesk", icon: Headphones },
+  { name: "Abandoned Carts", href: "/admin/dashboard/abandoned-carts", icon: ShoppingBag },
+  { name: "Automation", href: "/admin/dashboard/automation", icon: Workflow },
   { name: "Accounts", href: "/admin/dashboard/accounts", icon: Calculator },
   { name: "User Management", href: "/admin/dashboard/users", icon: Shield },
   { name: "Inventory", href: "/admin/dashboard/inventory", icon: BarChart3 },
   { name: "Analytics", href: "/admin/dashboard/analytics", icon: BarChart3 },
   { name: "Marketing", href: "/admin/dashboard/marketing", icon: Gift },
+  { name: "Affiliates", href: "/admin/dashboard/affiliates", icon: TrendingUp },
   { name: "Content", href: "/admin/dashboard/content", icon: FileText },
   { name: "Search Engine", href: "/admin/dashboard/search-engine", icon: Globe },
   { name: "Reviews", href: "/admin/dashboard/reviews", icon: Star },
   { name: "Shipping", href: "/admin/dashboard/shipping", icon: Truck },
   { name: "Returns", href: "/admin/dashboard/returns", icon: RefreshCw },
+  { name: "Domains", href: "/admin/dashboard/domains", icon: Globe },
+  { name: "Integrations", href: "/admin/dashboard/integrations", icon: Zap },
+  { name: "Billing & Payments", href: "/admin/dashboard/billing", icon: CreditCard },
   { name: "Settings", href: "/admin/dashboard/settings", icon: Settings },
 ];
 

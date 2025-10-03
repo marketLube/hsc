@@ -351,6 +351,7 @@ const getUrgencyLevel = (item: InventoryItem) => {
 };
 
 export default function InventoryPage() {
+  const [activeTab, setActiveTab] = useState<"all" | "expiring" | "expired" | "batch">("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -363,6 +364,42 @@ export default function InventoryPage() {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [inventory] = useState<InventoryItem[]>(mockInventory);
 
+  // Calculate days until expiry
+  const getDaysUntilExpiry = (expiryDate: string | undefined) => {
+    if (!expiryDate) return null;
+    const today = new Date();
+    const expiry = new Date(expiryDate);
+    const diffTime = expiry.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // Get expiry status
+  const getExpiryStatus = (days: number | null) => {
+    if (days === null) return "no-expiry";
+    if (days < 0) return "expired";
+    if (days <= 30) return "critical"; // Expires in 30 days
+    if (days <= 90) return "warning"; // Expires in 90 days
+    return "safe";
+  };
+
+  // Calculate expiry stats
+  const expiryStats = {
+    expired: inventory.filter(item => {
+      const days = getDaysUntilExpiry(item.expiryDate);
+      return days !== null && days < 0;
+    }).length,
+    expiringSoon: inventory.filter(item => {
+      const days = getDaysUntilExpiry(item.expiryDate);
+      return days !== null && days >= 0 && days <= 30;
+    }).length,
+    expiringWithin90Days: inventory.filter(item => {
+      const days = getDaysUntilExpiry(item.expiryDate);
+      return days !== null && days > 30 && days <= 90;
+    }).length,
+    totalWithExpiry: inventory.filter(item => item.expiryDate).length
+  };
+
   // Filter and sort inventory
   const filteredInventory = inventory.filter((item) => {
     const matchesSearch = 
@@ -373,7 +410,19 @@ export default function InventoryPage() {
     const matchesStatus = statusFilter === "all" || item.status === statusFilter;
     const matchesCategory = categoryFilter === "all" || item.category === categoryFilter;
     const matchesWarehouse = warehouseFilter === "all" || item.warehouse.includes(warehouseFilter);
-    return matchesSearch && matchesStatus && matchesCategory && matchesWarehouse;
+    
+    // Tab-based filtering
+    const days = getDaysUntilExpiry(item.expiryDate);
+    let matchesTab = true;
+    if (activeTab === "expiring") {
+      matchesTab = days !== null && days >= 0 && days <= 90; // Expires within 90 days
+    } else if (activeTab === "expired") {
+      matchesTab = days !== null && days < 0; // Already expired
+    } else if (activeTab === "batch") {
+      matchesTab = item.batchNumber !== undefined; // Has batch number
+    }
+    
+    return matchesSearch && matchesStatus && matchesCategory && matchesWarehouse && matchesTab;
   }).sort((a, b) => {
     let aValue = a[sortField];
     let bValue = b[sortField];
@@ -595,7 +644,7 @@ export default function InventoryPage() {
               <div>
                 <p className="text-sm font-medium text-gray-500">Total Value</p>
                 <p className="text-2xl font-bold text-gray-900">{formatCurrency(stats.totalValue)}</p>
-                <p className="text-xs text-gray-500 mt-1">Avg Stock: {stats.avgStockLevel.toFixed(1)}%</p>
+                <p className="text-xs text-gray-500 mt-1" suppressHydrationWarning>Avg Stock: {stats.avgStockLevel.toFixed(1)}%</p>
               </div>
               <div className="p-3 bg-emerald-100 rounded-2xl">
                 <DollarSign className="h-6 w-6 text-emerald-600" />
@@ -605,9 +654,95 @@ export default function InventoryPage() {
         </div>
       </div>
 
+      {/* Expiry Tracking Banner */}
+      {(expiryStats.expired > 0 || expiryStats.expiringSoon > 0) && (
+        <div className="bg-gradient-to-r from-orange-50 via-red-50 to-pink-50 border border-orange-200 rounded-2xl p-6 shadow-lg" suppressHydrationWarning>
+          <div className="flex items-start space-x-4">
+            <div className="flex-shrink-0">
+              <div className="p-2 bg-orange-100 rounded-xl">
+                <Calendar className="h-6 w-6 text-orange-600" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-orange-900 mb-2">Expiry Tracking Alert</h3>
+              <p className="text-sm text-orange-700 mb-4">
+                {expiryStats.expired > 0 && (
+                  <span className="font-semibold">{expiryStats.expired} products have expired</span>
+                )}
+                {expiryStats.expired > 0 && expiryStats.expiringSoon > 0 && <span> and </span>}
+                {expiryStats.expiringSoon > 0 && (
+                  <span className="font-semibold">{expiryStats.expiringSoon} products expiring within 30 days</span>
+                )}
+                . Take immediate action to prevent waste and maintain quality.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button 
+                  onClick={() => setActiveTab("expired")}
+                  className="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition-colors"
+                >
+                  <AlertTriangle className="h-4 w-4 mr-2" />
+                  View Expired ({expiryStats.expired})
+                </button>
+                <button 
+                  onClick={() => setActiveTab("expiring")}
+                  className="inline-flex items-center px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-xl hover:bg-orange-700 transition-colors"
+                >
+                  <Clock className="h-4 w-4 mr-2" />
+                  View Expiring Soon ({expiryStats.expiringSoon})
+                </button>
+                <button className="inline-flex items-center px-4 py-2 bg-white text-orange-600 text-sm font-medium rounded-xl border border-orange-200 hover:bg-orange-50 transition-colors">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export Report
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 bg-white rounded-xl shadow-sm">
+        <nav className="flex space-x-8 px-6" aria-label="Tabs">
+          {[
+            { id: "all", name: "All Inventory", icon: Package, count: inventory.length },
+            { id: "expiring", name: "Expiring Soon", icon: Clock, count: expiryStats.expiringSoon + expiryStats.expiringWithin90Days, color: "orange" },
+            { id: "expired", name: "Expired Items", icon: AlertTriangle, count: expiryStats.expired, color: "red" },
+            { id: "batch", name: "Batch Tracking", icon: Archive, count: expiryStats.totalWithExpiry }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id as any);
+                setCurrentPage(1);
+              }}
+              className={`flex items-center whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 ${
+                activeTab === tab.id
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              <tab.icon className={`h-4 w-4 mr-2 ${
+                tab.color === "orange" ? "text-orange-500" : 
+                tab.color === "red" ? "text-red-500" : ""
+              }`} />
+              {tab.name}
+              <span className={`ml-2 px-2 py-0.5 text-xs font-medium rounded-full ${
+                activeTab === tab.id
+                  ? "bg-blue-100 text-blue-800"
+                  : tab.color === "orange" ? "bg-orange-100 text-orange-700"
+                  : tab.color === "red" ? "bg-red-100 text-red-700"
+                  : "bg-gray-100 text-gray-600"
+              }`}>
+                {tab.count}
+              </span>
+            </button>
+          ))}
+        </nav>
+      </div>
+
       {/* Critical Alerts */}
-      {stats.criticalItems > 0 && (
-        <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl p-6 shadow-lg">
+      {stats.criticalItems > 0 && activeTab === "all" && (
+        <div className="bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-2xl p-6 shadow-lg" suppressHydrationWarning>
           <div className="flex items-start space-x-4">
             <div className="flex-shrink-0">
               <div className="p-2 bg-red-100 rounded-xl">
@@ -922,14 +1057,43 @@ export default function InventoryPage() {
                         </div>
                       </td>
 
-                      {/* Last Restocked */}
+                      {/* Last Restocked & Expiry */}
                       <td className="w-32 px-4 py-6">
                         <div className="space-y-1">
+                          <div className="text-xs text-gray-500">Restocked</div>
                           <div className="text-sm text-gray-900">{formatDate(item.lastRestocked)}</div>
                           {item.expiryDate && (
-                            <div className="text-xs text-gray-500">
-                              Expires: {formatDate(item.expiryDate)}
-                            </div>
+                            <>
+                              <div className="text-xs text-gray-500 mt-2">Expiry</div>
+                              <div className="text-sm font-medium text-gray-900">{formatDate(item.expiryDate)}</div>
+                              {(() => {
+                                const days = getDaysUntilExpiry(item.expiryDate);
+                                const status = getExpiryStatus(days);
+                                if (status === "expired") {
+                                  return (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                      <XCircle className="h-3 w-3 mr-1" />
+                                      Expired
+                                    </span>
+                                  );
+                                } else if (status === "critical") {
+                                  return (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                      <AlertTriangle className="h-3 w-3 mr-1" />
+                                      {days}d left
+                                    </span>
+                                  );
+                                } else if (status === "warning") {
+                                  return (
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                      <Clock className="h-3 w-3 mr-1" />
+                                      {days}d left
+                                    </span>
+                                  );
+                                }
+                                return null;
+                              })()}
+                            </>
                           )}
                         </div>
                       </td>

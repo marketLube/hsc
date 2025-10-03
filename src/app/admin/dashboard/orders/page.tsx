@@ -754,6 +754,26 @@ export default function OrdersPage() {
     // Open refund modal or process refund
   };
 
+  const handleDownloadEWaybill = (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+      console.log(`Downloading e-Waybill for order: ${order.orderNumber}`);
+      alert(`Downloading e-Waybill\nOrder: ${order.orderNumber}\nCustomer: ${order.customer.name}\nTotal: ${formatCurrency(order.total)}`);
+      // In production: Generate and download PDF e-waybill
+    }
+    setOpenDropdown(null);
+  };
+
+  const handleDownloadCourierBill = (orderId: string) => {
+    const order = orders.find(o => o.id === orderId);
+    if (order) {
+      console.log(`Downloading Courier Pickup Bill for order: ${order.orderNumber}`);
+      alert(`Downloading Courier Pickup Bill\nOrder: ${order.orderNumber}\nTracking: ${order.trackingNumber || 'N/A'}\nShipping: ${formatCurrency(order.shipping)}`);
+      // In production: Generate and download PDF courier bill
+    }
+    setOpenDropdown(null);
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1757,6 +1777,24 @@ export default function OrdersPage() {
                                 >
                                   <FileText className="h-4 w-4 mr-3 text-gray-400" />
                                   Print Order
+                                </button>
+                                <div className="border-t border-gray-100 my-1"></div>
+                                <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                  Download Documents
+                                </div>
+                                <button
+                                  onClick={() => handleDownloadEWaybill(order.id)}
+                                  className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                  <Download className="h-4 w-4 mr-3 text-blue-500" />
+                                  e-Waybill
+                                </button>
+                                <button
+                                  onClick={() => handleDownloadCourierBill(order.id)}
+                                  className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                >
+                                  <Receipt className="h-4 w-4 mr-3 text-green-500" />
+                                  Courier Pickup Bill
                                 </button>
                                 <div className="border-t border-gray-100 my-1"></div>
                                 <div className="px-3 py-1 text-xs font-medium text-gray-500 uppercase tracking-wider">
